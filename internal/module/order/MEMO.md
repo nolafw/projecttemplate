@@ -1,6 +1,6 @@
 RDBで常に親子関係が成立するリレーションのentityの場合
 
-```
+```plantuml
 @startuml Orders_OrderDetails_Relationship
 
 entity "orders" as orders {
