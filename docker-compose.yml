@@ -1,0 +1,23 @@
+services:
+  localstack:
+    container_name: "nola-localstack"
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - DEBUG=${DEBUG:-0}
+      - DB_HOST=${DB_HOST:-localhost}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - DB_NAME=${DB_NAME:-nola}
+      - AWS_ACCESS_KEY_ID=dummy
+      - AWS_SECRET_ACCESS_KEY=dummy
+    volumes:
+      - "./.localstack/volume:/var/lib/localstack"
+      # https://docs.localstack.cloud/references/init-hooks/#lifecycle-stages-and-hooks
+      - "./.localstack/init:/etc/localstack/init"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+

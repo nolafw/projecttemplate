@@ -1,0 +1,15 @@
+app_name: "app_name1"
+module_name: "default"
+# 指定した順番で読み込まれる
+var_locations: [dotenv, ssmparam, secretsmanager]
+ssm_param_paths:
+  "/app_name1/local/service_name1": ["DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"]
+secrets_manager_ids: ["test-secret1", "test-secret2"]
+container_registry:
+  provider: "aws"
+  name: "app_name1"
+
+aws:
+  endpoint: "http://localhost:4566"
+  region: "ap-northeast-1"
+  profile: "localstack"
