@@ -1,4 +1,4 @@
-package handler
+package controller
 
 // RESTでのresponse
 // JSON or XML

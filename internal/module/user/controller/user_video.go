@@ -1,4 +1,4 @@
-package handler
+package controller
 
 // ユーザーの動画関連の処理を行うハンドラ
 // 何のことで、何をどうすればいいかよくわかってない
