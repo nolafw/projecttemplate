@@ -2,8 +2,9 @@ package internal
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
-	"time"
+	"os"
 
 	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/projecttemplate/internal/module/user"
@@ -41,18 +42,7 @@ func Run(env *string) {
 	fmt.Printf("schema: %v\n", schema["default"])
 	fmt.Printf("params: %v\n", params["default"])
 
-	panicResponse := &rest.Response{
-		Code:   http.StatusInternalServerError,
-		Object: &GlobalError{Message: "internal server error"},
-	}
-	httpPipeline := &pipeline.Http{
-		Modules: Modules,
-		GlobalMiddlewares: []rest.Middleware{
-			mw.VerifyBodyParsable,
-		},
-		PanicResponse: panicResponse,
-		Logger:        logIncomingRequest,
-	}
+	httpPipeline := CreateHttpPipeline()
 	httpPipeline.Set()
 
 	server := &http.Server{
@@ -61,17 +51,32 @@ func Run(env *string) {
 	server.ListenAndServe()
 }
 
-func logIncomingRequest(req *rest.Request, res *rest.Response) {
-	currentTime := time.Now().Format("2006-01-02 15:04:05.000")
-	l := fmt.Sprintf(
-		"%s | %s | %s | %d | %s | %s",
-		currentTime,
-		req.RemoteAddr(),
-		req.Method(),
-		res.Code,
-		req.Path(),
-		req.UserAgent(),
-	)
-	// TODO: 出力先をファイルやlogstashに変えれるようにする
-	fmt.Println(l)
+func CreateHttpPipeline() *pipeline.Http {
+	panicResponse := &rest.Response{
+		Code:   http.StatusInternalServerError,
+		Object: &GlobalError{Message: "internal server error"},
+	}
+	slogLogger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	return &pipeline.Http{
+		Modules: Modules,
+		GlobalMiddlewares: []rest.Middleware{
+			mw.VerifyBodyParsable,
+		},
+		PanicResponse: panicResponse,
+		Logger:        CreateLogger(slogLogger),
+	}
+}
+
+func CreateLogger(l *slog.Logger) func(req *rest.Request, res *rest.Response) {
+	return func(req *rest.Request, res *rest.Response) {
+		// 出力先はファイルやlogstashに実装で変えれる。設定で変えれるようにしたほうがいいか?
+		l.Info(
+			"TODO: メッセージ内容",
+			"addr", req.RemoteAddr(),
+			"method", req.Method(),
+			"code", res.Code,
+			"path", req.Path(),
+			"user-agent", req.UserAgent(),
+		)
+	}
 }
