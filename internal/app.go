@@ -56,18 +56,19 @@ func CreateHttpPipeline() *pipeline.Http {
 		Code:   http.StatusInternalServerError,
 		Object: &GlobalError{Message: "internal server error"},
 	}
-	slogLogger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	return &pipeline.Http{
 		Modules: Modules,
 		GlobalMiddlewares: []rest.Middleware{
 			mw.VerifyBodyParsable,
 		},
 		PanicResponse: panicResponse,
-		Logger:        CreateLogger(slogLogger),
+		Logger:        CreateLogger(),
 	}
 }
 
-func CreateLogger(l *slog.Logger) func(req *rest.Request, res *rest.Response) {
+func CreateLogger() func(req *rest.Request, res *rest.Response) {
+	l := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
 	return func(req *rest.Request, res *rest.Response) {
 		// 出力先はファイルやlogstashに実装で変えれる。設定で変えれるようにしたほうがいいか?
 		l.Info(
