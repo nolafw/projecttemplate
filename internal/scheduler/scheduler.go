@@ -1,4 +1,4 @@
-package schedule
+package scheduler
 
 // 定期実行するイベントをここで登録する。
 // 基本的に `/cmd`内のコマンドを、ここでいつ実行するかを
