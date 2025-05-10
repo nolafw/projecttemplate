@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
+	"go.uber.org/fx"
 )
 
 type GlobalError struct {
@@ -28,27 +30,43 @@ func Register() {
 // これを、cmd/main.goで実行する
 func Run(env *string) {
 
-	// TODO: ビルドしてdockerにmainだけを入れた場合、設定フォルダは全部参照できないので?
-	//       docker build時は、フォルダ構成をそのままに、すべてのsettingフォルダのみコピーする。
-	// TODO: module内と、query内のsettingフォルダを検索して、スライスに含める。
-	paths := []string{
-		"./internal",
-	}
-	// Run the app
-	schema, params, err := config.Load(*env, "setting", paths)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("schema: %v\n", schema["default"])
-	fmt.Printf("params: %v\n", params["default"])
+	fx.New(
+		fx.Provide(NewApp(env)),
+		fx.Invoke(func(*http.Server) {}),
+	).Run()
 
-	httpPipeline := CreateHttpPipeline()
-	httpPipeline.Set()
+}
 
-	server := &http.Server{
-		Addr: fmt.Sprintf(":%d", params["default"].Server.Port),
+func NewApp(env *string) func(lc fx.Lifecycle) *http.Server {
+	return func(lc fx.Lifecycle) *http.Server {
+		paths := []string{
+			"./internal",
+		}
+		// Run the app
+		schema, params, err := config.Load(*env, "config", paths)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("schema: %v\n", schema["default"])
+		fmt.Printf("params: %v\n", params["default"])
+
+		httpPipeline := CreateHttpPipeline()
+		httpPipeline.Set()
+		srv := &http.Server{
+			Addr: fmt.Sprintf(":%d", params["default"].Server.Port),
+		}
+
+		lc.Append(fx.Hook{
+			OnStart: func(ctx context.Context) error {
+				srv.ListenAndServe()
+				return nil
+			},
+			OnStop: func(ctx context.Context) error {
+				return srv.Shutdown(ctx)
+			},
+		})
+		return srv
 	}
-	server.ListenAndServe()
 }
 
 func CreateHttpPipeline() *pipeline.Http {
