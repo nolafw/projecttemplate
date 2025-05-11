@@ -8,9 +8,8 @@ import (
 	"os"
 
 	"github.com/nolafw/config/pkg/config"
+	"github.com/nolafw/projecttemplate/internal/di"
 	"github.com/nolafw/projecttemplate/internal/module/user"
-	"github.com/nolafw/projecttemplate/internal/module/user/controller"
-	"github.com/nolafw/projecttemplate/internal/module/user/service"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
@@ -27,26 +26,21 @@ func Register() {
 
 // これを、cmd/main.goで実行する
 func Run(env *string) {
+	// FIXME: ここで1つ1つのmoduleを登録するのではなく、
+	// moduleの中で、constructorsに登録していけないか?
+	di.AppendConstructors(user.Deps())
+	di.AppendConstructors([]any{
+		NewApp(env),
+		fx.Annotate(CreateHttpPipeline, fx.ParamTags(`group:"modules"`)),
+	})
 
 	fx.New(
 		fx.Provide(
-			NewApp(env),
-			fx.Annotate(service.NewUserService, fx.As(new(service.UserService))),
-			controller.NewGet,
-			controller.NewPost,
-			AsModule(user.NewModule),
-			fx.Annotate(CreateHttpPipeline, fx.ParamTags(`group:"modules"`)),
+			di.Constructors()...,
 		),
 		fx.Invoke(func(*http.Server) {}),
 	).Run()
 
-}
-
-func AsModule(f any) any {
-	return fx.Annotate(
-		f,
-		fx.ResultTags(`group:"modules"`),
-	)
 }
 
 func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {

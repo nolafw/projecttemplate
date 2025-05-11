@@ -1,7 +1,9 @@
 package user
 
 import (
+	"github.com/nolafw/projecttemplate/internal/di"
 	"github.com/nolafw/projecttemplate/internal/module/user/controller"
+	"github.com/nolafw/projecttemplate/internal/module/user/service"
 	"github.com/nolafw/rest/pkg/rest"
 )
 
@@ -10,5 +12,14 @@ func NewModule(get *controller.Get, post *controller.Post) *rest.Module {
 		Path: "/user",
 		Get:  get,
 		Post: post,
+	}
+}
+
+func Deps() []any {
+	return []any{
+		di.Bind[service.UserService](service.NewUserService),
+		controller.NewGet,
+		controller.NewPost,
+		di.AsModule(NewModule),
 	}
 }
