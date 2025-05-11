@@ -5,8 +5,10 @@ import (
 	"github.com/nolafw/rest/pkg/rest"
 )
 
-var Module = rest.Module{
-	Path: "/user",
-	Get:  &controller.Get{},
-	Post: &controller.Post{},
+func NewModule(get *controller.Get, post *controller.Post) *rest.Module {
+	return &rest.Module{
+		Path: "/user",
+		Get:  get,
+		Post: post,
+	}
 }

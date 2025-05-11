@@ -9,6 +9,8 @@ import (
 
 	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/projecttemplate/internal/module/user"
+	"github.com/nolafw/projecttemplate/internal/module/user/controller"
+	"github.com/nolafw/projecttemplate/internal/module/user/service"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
@@ -19,10 +21,6 @@ type GlobalError struct {
 	Message string `json:"message"`
 }
 
-var Modules = []rest.Module{
-	user.Module,
-}
-
 func Register() {
 	// ここで、module全体を合体させる。
 }
@@ -31,14 +29,28 @@ func Register() {
 func Run(env *string) {
 
 	fx.New(
-		fx.Provide(NewApp(env)),
+		fx.Provide(
+			NewApp(env),
+			fx.Annotate(service.NewUserService, fx.As(new(service.UserService))),
+			controller.NewGet,
+			controller.NewPost,
+			AsModule(user.NewModule),
+			fx.Annotate(CreateHttpPipeline, fx.ParamTags(`group:"modules"`)),
+		),
 		fx.Invoke(func(*http.Server) {}),
 	).Run()
 
 }
 
-func NewApp(env *string) func(lc fx.Lifecycle) *http.Server {
-	return func(lc fx.Lifecycle) *http.Server {
+func AsModule(f any) any {
+	return fx.Annotate(
+		f,
+		fx.ResultTags(`group:"routes"`),
+	)
+}
+
+func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
+	return func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
 		paths := []string{
 			"./internal",
 		}
@@ -50,7 +62,6 @@ func NewApp(env *string) func(lc fx.Lifecycle) *http.Server {
 		fmt.Printf("schema: %v\n", schema["default"])
 		fmt.Printf("params: %v\n", params["default"])
 
-		httpPipeline := CreateHttpPipeline()
 		httpPipeline.Set()
 		srv := &http.Server{
 			Addr: fmt.Sprintf(":%d", params["default"].Server.Port),
@@ -58,7 +69,12 @@ func NewApp(env *string) func(lc fx.Lifecycle) *http.Server {
 
 		lc.Append(fx.Hook{
 			OnStart: func(ctx context.Context) error {
-				srv.ListenAndServe()
+				go func() {
+					if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+						// サーバー起動に失敗した場合のエラーログ
+						fmt.Printf("HTTP server ListenAndServe error: %v\n", err)
+					}
+				}()
 				return nil
 			},
 			OnStop: func(ctx context.Context) error {
@@ -69,13 +85,13 @@ func NewApp(env *string) func(lc fx.Lifecycle) *http.Server {
 	}
 }
 
-func CreateHttpPipeline() *pipeline.Http {
+func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 	panicResponse := &rest.Response{
 		Code:   http.StatusInternalServerError,
 		Object: &GlobalError{Message: "internal server error"},
 	}
 	return &pipeline.Http{
-		Modules: Modules,
+		Modules: modules,
 		GlobalMiddlewares: []rest.Middleware{
 			mw.VerifyBodyParsable,
 		},

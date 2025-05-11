@@ -8,3 +8,10 @@ package service
 // entityはserviceの中で処理でのみ使う。
 type UserService interface {
 }
+
+func NewUserService() UserService {
+	return &UserServiceImpl{}
+}
+
+type UserServiceImpl struct {
+}
