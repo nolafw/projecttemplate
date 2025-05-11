@@ -45,7 +45,7 @@ func Run(env *string) {
 func AsModule(f any) any {
 	return fx.Annotate(
 		f,
-		fx.ResultTags(`group:"routes"`),
+		fx.ResultTags(`group:"modules"`),
 	)
 }
 

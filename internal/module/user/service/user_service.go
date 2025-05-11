@@ -7,6 +7,7 @@ package service
 // entityを返さないように実装すること
 // entityはserviceの中で処理でのみ使う。
 type UserService interface {
+	Something() string
 }
 
 func NewUserService() UserService {
@@ -14,4 +15,8 @@ func NewUserService() UserService {
 }
 
 type UserServiceImpl struct {
+}
+
+func (s *UserServiceImpl) Something() string {
+	return "hoge"
 }
