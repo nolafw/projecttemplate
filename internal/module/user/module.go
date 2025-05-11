@@ -15,7 +15,7 @@ func NewModule(get *controller.Get, post *controller.Post) *rest.Module {
 	}
 }
 
-func Deps() []any {
+func Constructors() []any {
 	return []any{
 		di.Bind[service.UserService](service.NewUserService),
 		controller.NewGet,

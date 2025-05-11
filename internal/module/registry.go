@@ -6,6 +6,6 @@ import (
 
 func Registry() [][]any {
 	return [][]any{
-		user.Deps(),
+		user.Constructors(),
 	}
 }
