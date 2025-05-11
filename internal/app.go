@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -20,10 +19,6 @@ type GlobalError struct {
 	Message string `json:"message"`
 }
 
-func Register() {
-	// ここで、module全体を合体させる。
-}
-
 // これを、cmd/main.goで実行する
 func Run(env *string) {
 
@@ -33,18 +28,13 @@ func Run(env *string) {
 
 	di.AppendConstructors([]any{
 		NewApp(env),
-		fx.Annotate(CreateHttpPipeline, fx.ParamTags(`group:"modules"`)),
+		di.AsHttpPipeline(CreateHttpPipeline),
 	})
 
-	fx.New(
-		fx.Provide(
-			di.Constructors()...,
-		),
-		fx.Invoke(func(*http.Server) {}),
-	).Run()
-
+	di.ProvideAndRun(di.Constructors(), func(*http.Server) {})
 }
 
+// lcを使って、http.Serverのライフサイクルをカスタマイズすることも可能
 func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
 	return func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
 		paths := []string{
@@ -55,6 +45,7 @@ func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *htt
 		if err != nil {
 			panic(err)
 		}
+		// DEBUG:
 		fmt.Printf("schema: %v\n", schema["default"])
 		fmt.Printf("params: %v\n", params["default"])
 
@@ -62,22 +53,7 @@ func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *htt
 		srv := &http.Server{
 			Addr: fmt.Sprintf(":%d", params["default"].Server.Port),
 		}
-
-		lc.Append(fx.Hook{
-			OnStart: func(ctx context.Context) error {
-				go func() {
-					if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-						// サーバー起動に失敗した場合のエラーログ
-						fmt.Printf("HTTP server ListenAndServe error: %v\n", err)
-					}
-				}()
-				return nil
-			},
-			OnStop: func(ctx context.Context) error {
-				return srv.Shutdown(ctx)
-			},
-		})
-		return srv
+		return di.RegisterHttpServerLifecycle(lc, srv)
 	}
 }
 
