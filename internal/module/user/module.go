@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/nolafw/projecttemplate/internal/di"
+	"github.com/nolafw/di/pkg/di"
 	"github.com/nolafw/projecttemplate/internal/module/user/controller"
 	"github.com/nolafw/projecttemplate/internal/module/user/service"
 	"github.com/nolafw/rest/pkg/rest"

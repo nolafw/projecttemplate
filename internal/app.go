@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/nolafw/config/pkg/config"
-	"github.com/nolafw/projecttemplate/internal/di"
+	"github.com/nolafw/di/pkg/di"
 	"github.com/nolafw/projecttemplate/internal/module"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
