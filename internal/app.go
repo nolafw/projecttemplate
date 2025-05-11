@@ -9,7 +9,7 @@ import (
 
 	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/projecttemplate/internal/di"
-	"github.com/nolafw/projecttemplate/internal/module/user"
+	"github.com/nolafw/projecttemplate/internal/module"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
@@ -26,9 +26,11 @@ func Register() {
 
 // これを、cmd/main.goで実行する
 func Run(env *string) {
-	// FIXME: ここで1つ1つのmoduleを登録するのではなく、
-	// moduleの中で、constructorsに登録していけないか?
-	di.AppendConstructors(user.Deps())
+
+	for _, m := range module.Registry() {
+		di.AppendConstructors(m)
+	}
+
 	di.AppendConstructors([]any{
 		NewApp(env),
 		fx.Annotate(CreateHttpPipeline, fx.ParamTags(`group:"modules"`)),
