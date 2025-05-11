@@ -4,7 +4,7 @@ import (
 	"github.com/nolafw/projecttemplate/internal/module/user"
 )
 
-func Registry() [][]any {
+func AllModules() [][]any {
 	return [][]any{
 		user.Constructors(),
 	}

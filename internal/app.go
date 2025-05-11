@@ -22,7 +22,7 @@ type GlobalError struct {
 // これを、cmd/main.goで実行する
 func Run(env *string) {
 
-	for _, m := range module.Registry() {
+	for _, m := range module.AllModules() {
 		di.AppendConstructors(m)
 	}
 

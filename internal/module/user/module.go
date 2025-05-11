@@ -7,6 +7,10 @@ import (
 	"github.com/nolafw/rest/pkg/rest"
 )
 
+// TODO: nolacliでモジュールを作成したら、このファイルに
+// 自動的に、NewModuleと、Constructorsを追加する
+// さらに、module_provider.goにもConstructorsを追加すること
+
 func NewModule(get *controller.Get, post *controller.Post) *rest.Module {
 	return &rest.Module{
 		Path: "/user",
