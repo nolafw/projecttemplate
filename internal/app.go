@@ -37,17 +37,18 @@ func Run(env *string) {
 // lcを使って、http.Serverのライフサイクルをカスタマイズすることも可能
 func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
 	return func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
-		paths := []string{
-			"./internal",
-		}
-		// Run the app
-		schema, params, err := config.Load(*env, "config", paths)
+
+		paths, err := config.ListModulesWithConfig("./internal", "config")
 		if err != nil {
 			panic(err)
 		}
-		// DEBUG:
-		fmt.Printf("schema: %v\n", schema["default"])
-		fmt.Printf("params: %v\n", params["default"])
+		schema, params, err := config.Load(*env, paths)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("schema: %v\n", schema) // DEBUG:
+		fmt.Printf("params: %v\n", params) // DEBUG:
 
 		httpPipeline.Set()
 		srv := &http.Server{
