@@ -15,6 +15,7 @@ import (
 	"go.uber.org/fx"
 )
 
+// TODO: 別のファイルに分ける
 type GlobalError struct {
 	Message string `json:"message"`
 }
@@ -55,6 +56,7 @@ func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *htt
 }
 
 func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
+	// TODO: 別のファイルに分ける
 	panicResponse := &rest.Response{
 		Code:   http.StatusInternalServerError,
 		Object: &GlobalError{Message: "internal server error"},
@@ -69,6 +71,7 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 	}
 }
 
+// TODO: 別のファイルに分ける
 func CreateLogger() func(req *rest.Request, res *rest.Response) {
 	l := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
