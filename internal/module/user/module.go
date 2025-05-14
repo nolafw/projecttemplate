@@ -9,7 +9,7 @@ import (
 
 // TODO: nolacliでモジュールを作成したら、このファイルに
 // 自動的に、NewModuleと、Constructorsを追加する
-// さらに、module_provider.goにもConstructorsを追加すること
+// さらに、moduler.goにもimportを追加すること
 
 func NewModule(get *controller.Get, post *controller.Post) *rest.Module {
 	return &rest.Module{
@@ -19,21 +19,11 @@ func NewModule(get *controller.Get, post *controller.Post) *rest.Module {
 	}
 }
 
-func Constructors() []any {
-	return []any{
+func init() {
+	di.AppendConstructors([]any{
 		di.Bind[service.UserService](service.NewUserService),
 		controller.NewGet,
 		controller.NewPost,
 		di.AsModule(NewModule),
-	}
+	})
 }
-
-// FIXME: 上のConstructorsをやめて、以下のように登録させたい
-// func init() {
-// 	di.RegisterConstructors([]any{
-// 		di.Bind[service.UserService](service.NewUserService),
-// 		controller.NewGet,
-// 		controller.NewPost,
-// 		di.AsModule(NewModule),
-// 	})
-// }

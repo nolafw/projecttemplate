@@ -8,7 +8,7 @@ import (
 
 	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/di/pkg/di"
-	"github.com/nolafw/projecttemplate/internal/module"
+	_ "github.com/nolafw/projecttemplate/internal/module"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
@@ -21,10 +21,6 @@ type GlobalError struct {
 
 // これを、cmd/main.goで実行する
 func Run(env *string) {
-
-	for _, m := range module.AllModules() {
-		di.AppendConstructors(m)
-	}
 
 	di.AppendConstructors([]any{
 		NewApp(env),
