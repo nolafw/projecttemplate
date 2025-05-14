@@ -27,3 +27,13 @@ func Constructors() []any {
 		di.AsModule(NewModule),
 	}
 }
+
+// FIXME: 上のConstructorsをやめて、以下のように登録させたい
+// func init() {
+// 	di.RegisterConstructors([]any{
+// 		di.Bind[service.UserService](service.NewUserService),
+// 		controller.NewGet,
+// 		controller.NewPost,
+// 		di.AsModule(NewModule),
+// 	})
+// }
