@@ -2,13 +2,12 @@ package internal
 
 import (
 	"fmt"
-	"log/slog"
 	"net/http"
-	"os"
 
 	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/di/pkg/di"
 	_ "github.com/nolafw/projecttemplate/internal/module"
+	"github.com/nolafw/projecttemplate/internal/util"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
@@ -69,23 +68,17 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 			mw.NewSimpleCors("", "", "", "", 0, false),
 		},
 		PanicResponse: panicResponse,
-		Logger:        CreateLogger(),
+		Logger:        logger,
 	}
 }
 
-// TODO: 別のファイルに分ける
-func CreateLogger() func(req *rest.Request, res *rest.Response) {
-	l := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-
-	return func(req *rest.Request, res *rest.Response) {
-		// 出力先はファイルやlogstashに実装で変えれる。設定で変えれるようにしたほうがいいか?
-		l.Info(
-			"TODO: メッセージ内容",
-			"addr", req.RemoteAddr(),
-			"method", req.Method(),
-			"code", res.Code,
-			"path", req.Path(),
-			"user-agent", req.UserAgent(),
-		)
-	}
+func logger(req *rest.Request, res *rest.Response) {
+	util.Log().Info(
+		"TODO: メッセージ内容",
+		"addr", req.RemoteAddr(),
+		"method", req.Method(),
+		"code", res.Code,
+		"path", req.Path(),
+		"user-agent", req.UserAgent(),
+	)
 }
