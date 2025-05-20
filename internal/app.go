@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/di/pkg/di"
 	_ "github.com/nolafw/projecttemplate/internal/module"
 	"github.com/nolafw/projecttemplate/internal/util"
@@ -21,6 +20,7 @@ type GlobalError struct {
 
 // これを、cmd/main.goで実行する
 func Run(env *string) {
+	util.LoadConfig(env)
 
 	di.AppendConstructors([]any{
 		NewApp(env),
@@ -34,20 +34,9 @@ func Run(env *string) {
 func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
 	return func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
 
-		paths, err := config.ListModulesWithConfig("./internal", "config")
-		if err != nil {
-			panic(err)
-		}
-		schema, params, err := config.Load(*env, paths)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("schema: %v\n", schema) // DEBUG:
-		fmt.Printf("params: %v\n", params) // DEBUG:
-
 		httpPipeline.Set()
 		srv := &http.Server{
+			// TODO: paramsの値を渡す
 			Addr: fmt.Sprintf(":%d", params["default"].Server.Port),
 		}
 		return di.RegisterHttpServerLifecycle(lc, srv)
@@ -60,12 +49,22 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 		Code:   http.StatusInternalServerError,
 		Object: &GlobalError{Message: "internal server error"},
 	}
+
+	configParam, _ := util.GetConfigParam("default")
+	cors := configParam.Cors
+
 	return &pipeline.Http{
 		Modules: modules,
 		GlobalMiddlewares: []rest.Middleware{
 			mw.VerifyBodyParsable,
-			// TODO: configのCorsから設定値を振り分けること
-			mw.NewSimpleCors("", "", "", "", 0, false),
+			mw.NewSimpleCors(
+				cors.AllowOrigin,
+				cors.AllowMethods,
+				cors.AllowHeaders,
+				cors.ExposeHeaders,
+				cors.MaxAge,
+				cors.AllowCredentials,
+			),
 		},
 		PanicResponse: panicResponse,
 		Logger:        logger,

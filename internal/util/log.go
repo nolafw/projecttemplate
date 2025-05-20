@@ -7,14 +7,14 @@ import (
 )
 
 var (
-	logger *slog.Logger
-	once   sync.Once
+	logger     *slog.Logger
+	onceForLog sync.Once
 )
 
 // どのloggerを使うかは自由です。
 // 用途にあったloggerを定義してください。
 func Log() *slog.Logger {
-	once.Do(func() {
+	onceForLog.Do(func() {
 		logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	})
 	return logger
