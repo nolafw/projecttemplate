@@ -65,6 +65,8 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 		Modules: modules,
 		GlobalMiddlewares: []rest.Middleware{
 			mw.VerifyBodyParsable,
+			// TODO: configのCorsから設定値を振り分けること
+			mw.NewSimpleCors("", "", "", "", 0, false),
 		},
 		PanicResponse: panicResponse,
 		Logger:        CreateLogger(),
