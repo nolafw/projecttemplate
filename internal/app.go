@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/nolafw/di/pkg/di"
@@ -50,21 +51,17 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 		Object: &GlobalError{Message: "internal server error"},
 	}
 
-	configParam, _ := util.GetConfigParam("default")
+	configParam, err := util.GetConfigParam("default")
+	if err != nil {
+		log.Fatalf("config not found: %s", err)
+	}
 	cors := configParam.Cors
 
 	return &pipeline.Http{
 		Modules: modules,
 		GlobalMiddlewares: []rest.Middleware{
 			mw.VerifyBodyParsable,
-			mw.NewSimpleCors(
-				cors.AllowOrigin,
-				cors.AllowMethods,
-				cors.AllowHeaders,
-				cors.ExposeHeaders,
-				cors.MaxAge,
-				cors.AllowCredentials,
-			),
+			mw.NewSimpleCors(cors),
 		},
 		PanicResponse: panicResponse,
 		Logger:        logger,

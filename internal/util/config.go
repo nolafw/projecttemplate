@@ -36,3 +36,5 @@ func GetConfigParam(name string) (*runtimeconfig.Parameters, error) {
 	}
 	return param, nil
 }
+
+// TODO: Schemaのgetter
