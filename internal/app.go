@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/di/pkg/di"
 	_ "github.com/nolafw/projecttemplate/internal/module"
 	"github.com/nolafw/projecttemplate/internal/util"
@@ -21,7 +22,7 @@ type GlobalError struct {
 
 // これを、cmd/main.goで実行する
 func Run(env *string) {
-	util.LoadConfig(env)
+	config.InitializeConfiguration(env, "./internal", "config")
 
 	di.AppendConstructors([]any{
 		NewApp(env),
@@ -36,9 +37,13 @@ func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *htt
 	return func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
 
 		httpPipeline.Set()
+
+		params, err := config.Params("default")
+		if err != nil {
+			log.Fatalf("default config parameters not found: %s", err)
+		}
 		srv := &http.Server{
-			// TODO: paramsの値を渡す
-			Addr: fmt.Sprintf(":%d", params["default"].Server.Port),
+			Addr: fmt.Sprintf(":%d", params.Server.Port),
 		}
 		return di.RegisterHttpServerLifecycle(lc, srv)
 	}
@@ -51,11 +56,11 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 		Object: &GlobalError{Message: "internal server error"},
 	}
 
-	configParam, err := util.GetConfigParam("default")
+	configParams, err := config.Params("default")
 	if err != nil {
-		log.Fatalf("config not found: %s", err)
+		log.Fatalf("default config parameters not found: %s", err)
 	}
-	cors := configParam.Cors
+	cors := configParams.Cors
 
 	return &pipeline.Http{
 		Modules: modules,
