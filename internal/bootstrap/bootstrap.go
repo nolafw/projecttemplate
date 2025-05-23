@@ -29,7 +29,7 @@ func Run(env *string) {
 		di.AsHttpPipeline(CreateHttpPipeline),
 	})
 
-	di.ProvideAndRun(di.Constructors(), func(*http.Server) {})
+	di.ProvideAndRun(di.Constructors(), func(*http.Server) {}, false)
 }
 
 // FIXME: 完全にfxを隠蔽することはできないか?
