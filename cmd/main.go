@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/nolafw/projecttemplate/internal"
+	"github.com/nolafw/projecttemplate/internal/bootstrap"
 	"github.com/nolafw/projecttemplate/internal/scheduler"
 )
 
@@ -23,6 +23,6 @@ func main() {
 	if isScheduler != nil && *isScheduler {
 		scheduler.Start(envVal)
 	} else {
-		internal.Run(envVal)
+		bootstrap.Run(envVal)
 	}
 }
