@@ -39,6 +39,8 @@ func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *htt
 		httpPipeline.Set()
 
 		params, err := config.Params("default")
+		logkit.SetLogLevel(params.Log.Level)
+
 		if err != nil {
 			log.Fatalf("default config parameters not found: %s", err)
 		}
