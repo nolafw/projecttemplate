@@ -23,3 +23,7 @@ func Logger() *slog.Logger {
 func Info(msg string, args ...any) {
 	Logger().Info(msg, args...)
 }
+
+// TODO: 設定ファイルから読み込んだ値によって、自動的に出力レベルを変更する関数を作る
+// 明示的にInfoなど指定するのではｎ
+// slogにその機能があればそのまま使う
