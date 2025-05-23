@@ -8,7 +8,7 @@ import (
 	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/di/pkg/di"
 	_ "github.com/nolafw/projecttemplate/internal/module"
-	"github.com/nolafw/projecttemplate/internal/util"
+	"github.com/nolafw/projecttemplate/internal/plamo/logkit"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
@@ -74,7 +74,7 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 }
 
 func logger(req *rest.Request, res *rest.Response) {
-	util.Log().Info(
+	logkit.Info(
 		"TODO: メッセージ内容",
 		"addr", req.RemoteAddr(),
 		"method", req.Method(),
