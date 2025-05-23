@@ -32,6 +32,7 @@ func Run(env *string) {
 	di.ProvideAndRun(di.Constructors(), func(*http.Server) {})
 }
 
+// FIXME: 完全にfxを隠蔽することはできないか?
 // lcを使って、http.Serverのライフサイクルをカスタマイズすることも可能
 func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
 	return func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
