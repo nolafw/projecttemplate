@@ -1,6 +1,8 @@
 package user
 
 import (
+	"github.com/nolafw/config/pkg/config"
+	"github.com/nolafw/config/pkg/runtimeconfig"
 	"github.com/nolafw/di/pkg/di"
 	"github.com/nolafw/projecttemplate/internal/module/user/controller"
 	"github.com/nolafw/projecttemplate/internal/module/user/service"
@@ -10,6 +12,11 @@ import (
 // TODO: nolacliでモジュールを作成したら、このファイルに
 // 自動的に、NewModuleと、Constructorsを追加する
 // さらに、moduler.goにもimportを追加すること
+
+// TODO: 便利機能として、この関数も自動的にnolacliで生成する
+func Params() (*runtimeconfig.Parameters, error) {
+	return config.Params("user")
+}
 
 func NewModule(get *controller.Get, post *controller.Post) *rest.Module {
 	return &rest.Module{
