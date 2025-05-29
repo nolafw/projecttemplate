@@ -17,7 +17,7 @@ const ModuleName = "user"
 
 // TODO: 便利機能として、この関数も自動的にnolacliで生成する
 func Params() (*runtimeconfig.Parameters, error) {
-	return config.Params(ModuleName)
+	return config.ModuleParams(ModuleName)
 }
 
 func NewModule(get *controller.Get, post *controller.Post) *rest.Module {

@@ -56,25 +56,25 @@ func SetLogLevel(level string) {
 }
 
 func Debug(msg string, args ...any) {
-	if logLevel > slog.LevelDebug {
+	if logLevel <= slog.LevelDebug {
 		Logger().Debug(msg, args...)
 	}
 }
 
 func Info(msg string, args ...any) {
-	if logLevel > slog.LevelInfo {
+	if logLevel <= slog.LevelInfo {
 		Logger().Info(msg, args...)
 	}
 }
 
 func Warn(msg string, args ...any) {
-	if logLevel > slog.LevelWarn {
+	if logLevel <= slog.LevelWarn {
 		Logger().Warn(msg, args...)
 	}
 }
 
 func Error(msg string, args ...any) {
-	if logLevel > slog.LevelError {
+	if logLevel <= slog.LevelError {
 		Logger().Error(msg, args...)
 	}
 }

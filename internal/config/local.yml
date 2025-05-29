@@ -1,4 +1,3 @@
-module_name: "default"
 # 指定した順番で読み込まれる
 var_locations: [dotenv]
 ssm_param_paths:
