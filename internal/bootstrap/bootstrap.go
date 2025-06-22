@@ -55,8 +55,8 @@ func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *htt
 func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 	// TODO: 別のファイルに分ける
 	panicResponse := &rest.Response{
-		Code:   http.StatusInternalServerError,
-		Object: &GlobalError{Message: "internal server error"},
+		Code: http.StatusInternalServerError,
+		Body: &GlobalError{Message: "internal server error"},
 	}
 
 	configParams, err := config.ModuleParams("default")

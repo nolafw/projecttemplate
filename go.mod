@@ -8,7 +8,7 @@ require (
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/nolafw/config v0.0.9 // indirect
 	github.com/nolafw/di v0.0.3 // indirect
-	github.com/nolafw/rest v0.0.6 // indirect
+	github.com/nolafw/rest v0.0.7 // indirect
 	github.com/nolafw/validator v0.0.2 // indirect
 	go.uber.org/dig v1.19.0 // indirect
 	go.uber.org/fx v1.24.0 // indirect

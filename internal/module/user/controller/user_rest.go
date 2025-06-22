@@ -29,7 +29,7 @@ func (c *Get) Handle(r *rest.Request) *rest.Response {
 		Xml:        true,
 		Code:       http.StatusOK,
 		AddHeaders: map[string]string{"Server": "net/http"},
-		Object:     &dto.User{Id: 1, Name: "hoge"},
+		Body:       &dto.User{Id: 1, Name: "hoge"},
 	}
 }
 
@@ -52,8 +52,8 @@ func (c *Post) Handle(r *rest.Request) *rest.Response {
 	})
 	if err != nil {
 		return &rest.Response{
-			Code:   http.StatusBadRequest,
-			Object: err,
+			Code: http.StatusBadRequest,
+			Body: err,
 		}
 	}
 	id, isEmpty := r.PathValue("id")
@@ -65,8 +65,8 @@ func (c *Post) Handle(r *rest.Request) *rest.Response {
 		)
 		if vE != nil {
 			return &rest.Response{
-				Code:   http.StatusBadRequest,
-				Object: vE,
+				Code: http.StatusBadRequest,
+				Body: vE,
 			}
 		}
 	}
@@ -78,6 +78,6 @@ func (c *Post) Handle(r *rest.Request) *rest.Response {
 	return &rest.Response{
 		Code:       http.StatusOK,
 		AddHeaders: map[string]string{"Server": "net/http"},
-		Object:     &dto.User{Id: 1, Name: "hoge"},
+		Body:       &dto.User{Id: 1, Name: "hoge"},
 	}
 }
