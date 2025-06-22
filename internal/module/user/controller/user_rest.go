@@ -6,10 +6,9 @@ import (
 
 	"github.com/nolafw/projecttemplate/internal/module/user/dto"
 	"github.com/nolafw/projecttemplate/internal/module/user/service"
-	"github.com/nolafw/projecttemplate/internal/module/user/vali"
+	"github.com/nolafw/projecttemplate/internal/plamo/vkit"
 	"github.com/nolafw/rest/pkg/rest"
 	"github.com/nolafw/validator/pkg/rule"
-	"github.com/nolafw/validator/pkg/validate"
 )
 
 // RESTでのresponse
@@ -45,24 +44,30 @@ func NewPost(service service.UserService) *Post {
 }
 
 func (c *Post) Handle(r *rest.Request) *rest.Response {
-	user, err := validate.HttpRequestBody[dto.User](r.Request(), &rule.RuleSet{
-		Field: "Name",
-		Rules: []rule.Predicate{
-			vali.Required,
+	user, err := vkit.HttpRequestBody[dto.User](r.Request(), &rule.RuleSet{
+		Field: "name",
+		Rules: []rule.Rule{
+			vkit.MaxLength(10),
 		},
 	})
 	if err != nil {
-		// エラーレスポンスを返す
+		return &rest.Response{
+			Code:   http.StatusBadRequest,
+			Object: err,
+		}
 	}
 	id, isEmpty := r.PathValue("id")
 	if !isEmpty {
 		// do something
-		vE := validate.Map(
+		vE := vkit.Map(
 			map[string]any{"id": id},
-			&rule.RuleSet{Field: "id", Rules: []rule.Predicate{vali.MaxLength}},
+			&rule.RuleSet{Field: "id", Rules: []rule.Rule{vkit.MaxLength(10)}},
 		)
 		if vE != nil {
-			// エラーレスポンスを返す
+			return &rest.Response{
+				Code:   http.StatusBadRequest,
+				Object: vE,
+			}
 		}
 	}
 
