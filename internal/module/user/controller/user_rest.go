@@ -44,7 +44,7 @@ func NewPost(service service.UserService) *Post {
 }
 
 func (c *Post) Handle(r *rest.Request) *rest.Response {
-	user, err := vkit.HttpRequestBody[dto.User](r.Request(), &rule.RuleSet{
+	user, err := vkit.HttpRequestBody[dto.User](r, &rule.RuleSet{
 		Field: "name",
 		Rules: []rule.Rule{
 			vkit.MaxLength(10),
@@ -58,7 +58,6 @@ func (c *Post) Handle(r *rest.Request) *rest.Response {
 	}
 	id, isEmpty := r.PathValue("id")
 	if !isEmpty {
-		// do something
 		vE := vkit.Map(
 			map[string]any{"id": id},
 			&rule.RuleSet{Field: "id", Rules: []rule.Rule{vkit.MaxLength(10)}},

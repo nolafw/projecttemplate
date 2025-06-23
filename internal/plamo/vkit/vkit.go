@@ -1,8 +1,7 @@
 package vkit
 
 import (
-	"net/http"
-
+	"github.com/nolafw/rest/pkg/rest"
 	"github.com/nolafw/validator/pkg/rule"
 	"github.com/nolafw/validator/pkg/validate"
 	"github.com/nolafw/validator/pkg/verr"
@@ -11,8 +10,8 @@ import (
 // validate.HttpRequestBodyFieldFirst か、
 // validate.HttpRequestBodyLangFirst はプロジェクトの都合に合わせて
 // 選択してください。
-func HttpRequestBody[T any](r *http.Request, ruleSets ...*rule.RuleSet) (*T, verr.ValidationErrorMessages) {
-	return validate.HttpRequestBodyFieldFirst[T](r, ruleSets...)
+func HttpRequestBody[T any](r *rest.Request, ruleSets ...*rule.RuleSet) (*T, verr.ValidationErrorMessages) {
+	return validate.HttpRequestBodyFieldFirst[T](r.Request(), ruleSets...)
 }
 
 // validate.MapFieldFirst か、
