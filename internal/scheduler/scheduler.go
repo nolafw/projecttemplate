@@ -13,4 +13,5 @@ func Start(env *string) {
 	// -schedulerフラグがあれば、app.Run()の代わりに実行
 	// 1分ごとにcronでスケジュールされた処理があれば、それを実行する。
 	// 基本的には、ECSで、appとは別のサービスとして動かすもの。
+	// schedulerでは、httpサーバーなどは起動させない。
 }
