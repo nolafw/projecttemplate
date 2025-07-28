@@ -49,6 +49,9 @@ func NewApp(env *string) func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Se
 			Addr: fmt.Sprintf(":%d", params.Server.Port),
 		}
 
+		// TODO: interceptorを使って、リクエストのログを出力する
+		// TODO: panicが起きたときの制御はどうなる?
+		// そういった処理のセットを、httpPipelineのようにここの `opt`に渡すようにする
 		grpcSrv := grpc.NewServer()
 		// grpcが不要な場合は、nilを渡すことも可能。TODO: デフォルトではそうしておくこと。
 		return dikit.RegisterServerLifecycle(lc, httpSrv, grpcSrv)
