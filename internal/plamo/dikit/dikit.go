@@ -70,7 +70,7 @@ func RegisterServerLifecycle(lc LC, srv *http.Server, grpcSrv *grpc.Server) *htt
 						// TODO: ログをちゃんとしたものに修正
 						slog.Error("gRPC server failed to listen", "error", err)
 					}
-					if err := srv.Serve(listen); err != nil {
+					if err := grpcSrv.Serve(listen); err != nil {
 						// TODO: ログをちゃんとしたものに修正
 						slog.Error("gRPC server failed to start", "error", err)
 					}
