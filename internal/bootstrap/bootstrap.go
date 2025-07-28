@@ -6,13 +6,14 @@ import (
 	"net/http"
 
 	"github.com/nolafw/config/pkg/config"
-	"github.com/nolafw/di/pkg/di"
 	_ "github.com/nolafw/projecttemplate/internal/module"
+	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/projecttemplate/internal/plamo/logkit"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
-	"go.uber.org/fx"
+
+	"google.golang.org/grpc"
 )
 
 // TODO: 別のファイルに分ける
@@ -24,18 +25,17 @@ type GlobalError struct {
 func Run(env *string) {
 	config.InitializeConfiguration(env, "./internal", "config")
 
-	di.AppendConstructors([]any{
+	dikit.AppendConstructors([]any{
 		NewApp(env),
-		di.AsHttpPipeline(CreateHttpPipeline),
+		dikit.AsHttpPipeline(CreateHttpPipeline),
 	})
 
-	di.ProvideAndRun(di.Constructors(), func(*http.Server) {}, false)
+	dikit.ProvideAndRun(dikit.Constructors(), func(*http.Server) {}, true)
 }
 
-// FIXME: 完全にfxを隠蔽することはできないか?
 // lcを使って、http.Serverのライフサイクルをカスタマイズすることも可能
-func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
-	return func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *http.Server {
+func NewApp(env *string) func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
+	return func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
 
 		httpPipeline.Set()
 
@@ -45,10 +45,13 @@ func NewApp(env *string) func(lc fx.Lifecycle, httpPipeline *pipeline.Http) *htt
 		if err != nil {
 			log.Fatalf("default config parameters not found: %s", err)
 		}
-		srv := &http.Server{
+		httpSrv := &http.Server{
 			Addr: fmt.Sprintf(":%d", params.Server.Port),
 		}
-		return di.RegisterHttpServerLifecycle(lc, srv)
+
+		grpcSrv := grpc.NewServer()
+		// grpcが不要な場合は、nilを渡すことも可能。TODO: デフォルトではそうしておくこと。
+		return dikit.RegisterServerLifecycle(lc, httpSrv, grpcSrv)
 	}
 }
 

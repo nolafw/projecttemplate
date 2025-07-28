@@ -3,10 +3,15 @@ package user
 import (
 	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/config/pkg/runtimeconfig"
-	"github.com/nolafw/di/pkg/di"
+	usergrpc "github.com/nolafw/projecttemplate/internal/module/user/controller/grpc"
 	"github.com/nolafw/projecttemplate/internal/module/user/controller/http"
 	"github.com/nolafw/projecttemplate/internal/module/user/service"
+	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/rest/pkg/rest"
+
+	"google.golang.org/grpc"
+
+	pb "github.com/nolafw/projecttemplate/service_adapter/user"
 )
 
 // TODO: nolacliでモジュールを作成したら、このファイルに
@@ -28,13 +33,20 @@ func NewModule(get *http.Get, post *http.Post) *rest.Module {
 	}
 }
 
+func NewRegisterUserServer(grpcServer *grpc.Server) func(any) {
+	return func(srv any) {
+		pb.RegisterUserServer(grpcServer, srv.(pb.UserServer))
+	}
+}
+
 func init() {
-	di.AppendConstructors([]any{
-		di.Bind[service.UserService](service.NewUserService),
+	dikit.AppendConstructors([]any{
+		dikit.Bind[service.UserService](service.NewUserService),
 		http.NewGet,
 		http.NewPost,
-		di.AsModule(NewModule),
+		dikit.AsModule(NewModule),
+		// gRPC
+		usergrpc.NewUserServer,
+		dikit.Bind[pb.UserServer](usergrpc.NewUserServer),
 	})
-
-	// TODO: gRPCの場合、ここでRegisterする
 }
