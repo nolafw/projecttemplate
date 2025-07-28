@@ -4,7 +4,7 @@ import (
 	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/config/pkg/runtimeconfig"
 	"github.com/nolafw/di/pkg/di"
-	"github.com/nolafw/projecttemplate/internal/module/user/controller"
+	"github.com/nolafw/projecttemplate/internal/module/user/controller/http"
 	"github.com/nolafw/projecttemplate/internal/module/user/service"
 	"github.com/nolafw/rest/pkg/rest"
 )
@@ -20,7 +20,7 @@ func Params() (*runtimeconfig.Parameters, error) {
 	return config.ModuleParams(ModuleName)
 }
 
-func NewModule(get *controller.Get, post *controller.Post) *rest.Module {
+func NewModule(get *http.Get, post *http.Post) *rest.Module {
 	return &rest.Module{
 		Path: "/user",
 		Get:  get,
@@ -31,8 +31,10 @@ func NewModule(get *controller.Get, post *controller.Post) *rest.Module {
 func init() {
 	di.AppendConstructors([]any{
 		di.Bind[service.UserService](service.NewUserService),
-		controller.NewGet,
-		controller.NewPost,
+		http.NewGet,
+		http.NewPost,
 		di.AsModule(NewModule),
 	})
+
+	// TODO: gRPCの場合、ここでRegisterする
 }

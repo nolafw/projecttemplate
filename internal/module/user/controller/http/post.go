@@ -1,4 +1,4 @@
-package controller
+package http
 
 import (
 	"fmt"
@@ -10,28 +10,6 @@ import (
 	"github.com/nolafw/rest/pkg/rest"
 	"github.com/nolafw/validator/pkg/rule"
 )
-
-// RESTでのresponse
-// JSON or XML
-
-type Get struct {
-	Service service.UserService
-}
-
-func NewGet(service service.UserService) *Get {
-	return &Get{
-		Service: service,
-	}
-}
-
-func (c *Get) Handle(r *rest.Request) *rest.Response {
-	return &rest.Response{
-		Xml:        true,
-		Code:       http.StatusOK,
-		AddHeaders: map[string]string{"Server": "net/http"},
-		Body:       &dto.User{Id: 1, Name: "hoge"},
-	}
-}
 
 type Post struct {
 	Service service.UserService
