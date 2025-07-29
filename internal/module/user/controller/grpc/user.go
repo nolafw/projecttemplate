@@ -9,14 +9,14 @@ import (
 )
 
 // gRPCでの接続処理
-type userServer struct {
+type UserAPI struct {
 	pb.UnimplementedUserServer
 	service service.UserService
 }
 
 // DIで使う必要なserviceをinject
-func NewUserServer(service service.UserService) *userServer {
-	return &userServer{
+func NewUserAPI(service service.UserService) *UserAPI {
+	return &UserAPI{
 		service: service,
 	}
 }
@@ -26,7 +26,7 @@ func NewUserServer(service service.UserService) *userServer {
 // context.Contextを引数に受け取る
 // reqのところは、DTOで置き換える
 // 返り値は、DTOとerror
-func (s *userServer) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+func (s *UserAPI) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 
 	fmt.Println("GetUser called with request:", req.UserId)
 

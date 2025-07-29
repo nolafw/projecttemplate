@@ -9,6 +9,8 @@ import (
 	_ "github.com/nolafw/projecttemplate/internal/module"
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/projecttemplate/internal/plamo/logkit"
+	pbPost "github.com/nolafw/projecttemplate/service_adapter/post"
+	pbUser "github.com/nolafw/projecttemplate/service_adapter/user"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
@@ -27,15 +29,30 @@ func Run(env *string) {
 
 	dikit.AppendConstructors([]any{
 		NewApp(env),
+		dikit.NewGRPCServer,
 		dikit.AsHttpPipeline(CreateHttpPipeline),
 	})
 
-	dikit.ProvideAndRun(dikit.Constructors(), func(*http.Server) {}, true)
+	dikit.ProvideAndRun(dikit.Constructors(), func(
+		httpSrv *http.Server,
+		grpcSrv *grpc.Server,
+		// TODO: この引数を特定の型の配列にしてにしてinvokeしたい
+		userAPI pbUser.UserServer,
+		postAPI pbPost.PostServer,
+	) {
+		// TODO: ちゃんとgRPCが動いてるかチェック
+		if grpcSrv != nil {
+			// TODO: ここにgRPCのサービスを登録する
+			pbUser.RegisterUserServer(grpcSrv, userAPI)
+			pbPost.RegisterPostServer(grpcSrv, postAPI)
+			fmt.Println("gRPC server registered!")
+		}
+	}, false)
 }
 
 // lcを使って、http.Serverのライフサイクルをカスタマイズすることも可能
-func NewApp(env *string) func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
-	return func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
+func NewApp(env *string) func(lc dikit.LC, httpPipeline *pipeline.Http, grpcSrv *grpc.Server) *http.Server {
+	return func(lc dikit.LC, httpPipeline *pipeline.Http, grpcSrv *grpc.Server) *http.Server {
 
 		httpPipeline.Set()
 
@@ -49,10 +66,6 @@ func NewApp(env *string) func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Se
 			Addr: fmt.Sprintf(":%d", params.Server.Port),
 		}
 
-		// TODO: interceptorを使って、リクエストのログを出力する
-		// TODO: panicが起きたときの制御はどうなる?
-		// そういった処理のセットを、httpPipelineのようにここの `opt`に渡すようにする
-		grpcSrv := grpc.NewServer()
 		// grpcが不要な場合は、nilを渡すことも可能。TODO: デフォルトではそうしておくこと。
 		return dikit.RegisterServerLifecycle(lc, httpSrv, grpcSrv)
 	}
