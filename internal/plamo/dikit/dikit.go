@@ -54,55 +54,51 @@ func ProvideAndRun(constructors []any, invocation any, outputFxLog bool) {
 	fx.New(options...).Run()
 }
 
-func NewGRPCServer() *grpc.Server {
-	// TODO: interceptorを使って、リクエストのログを出力する
-	// TODO: panicが起きたときの制御はどうなる?
-	// そういった処理のセットを、httpPipelineのようにここの `opt`に渡すようにする
-
-	return grpc.NewServer()
-	// return nil // gRPCを使わない場合はnilを返す
-}
-
-func RegisterServerLifecycle(lc LC, srv *http.Server, grpcSrv *grpc.Server) *http.Server {
+func RegisterHTTPServerLifecycle(lc LC, srv *http.Server) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			// HTTPサーバーを別goroutineで起動
 			go func() {
+				slog.Info("HTTP server starting", "addr", srv.Addr)
 				if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-					// TODO: メッセージをわかりやすいものに変更する
 					slog.Error("HTTP server ListenAndServe error", "error", err)
 				}
 			}()
-
-			// gRPCサーバーを別goroutineで起動
-			if grpcSrv != nil {
-				go func() {
-					// TODO: ポートを指定できるようにする
-					listen, err := net.Listen("tcp", ":50051")
-					if err != nil {
-						// TODO: ログをちゃんとしたものに修正
-						slog.Error("gRPC server failed to listen", "error", err)
-						return
-					}
-					slog.Info("gRPC server starting on :50051")
-					if err := grpcSrv.Serve(listen); err != nil {
-						// TODO: ログをちゃんとしたものに修正
-						slog.Error("gRPC server failed to start", "error", err)
-					}
-				}()
-			}
-
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			if grpcSrv != nil {
-				grpcSrv.Stop()
-			}
-
+			slog.Info("Shutting down HTTP server")
 			return srv.Shutdown(ctx)
 		},
 	})
-	return srv
+}
+
+func RegisterGRPCServerLifecycle(lc LC, grpcSrv *grpc.Server) {
+	if grpcSrv == nil {
+		return
+	}
+
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
+			go func() {
+				// TODO: ポートを設定可能にする
+				listen, err := net.Listen("tcp", ":50051")
+				if err != nil {
+					slog.Error("gRPC server failed to listen", "error", err)
+					return
+				}
+				slog.Info("gRPC server starting", "addr", ":50051")
+				if err := grpcSrv.Serve(listen); err != nil {
+					slog.Error("gRPC server failed to start", "error", err)
+				}
+			}()
+			return nil
+		},
+		OnStop: func(ctx context.Context) error {
+			slog.Info("Shutting down gRPC server")
+			grpcSrv.GracefulStop()
+			return nil
+		},
+	})
 }
 
 // | 用途           | ライブラリ                                                              |

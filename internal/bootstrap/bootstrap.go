@@ -28,8 +28,8 @@ func Run(env *string) {
 	config.InitializeConfiguration(env, "./internal", "config")
 
 	dikit.AppendConstructors([]any{
-		NewApp(env),
-		dikit.NewGRPCServer,
+		NewHttpApp(env),
+		NewGRPCApp(env),
 		dikit.AsHttpPipeline(CreateHttpPipeline),
 	})
 
@@ -50,24 +50,24 @@ func Run(env *string) {
 	}, false)
 }
 
-// lcを使って、http.Serverのライフサイクルをカスタマイズすることも可能
-func NewApp(env *string) func(lc dikit.LC, httpPipeline *pipeline.Http, grpcSrv *grpc.Server) *http.Server {
-	return func(lc dikit.LC, httpPipeline *pipeline.Http, grpcSrv *grpc.Server) *http.Server {
-
+// HTTPサーバーの初期化
+func NewHttpApp(env *string) func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
+	return func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
 		httpPipeline.Set()
-
+		// TODO: envを使うこと
 		params, err := config.ModuleParams("default")
-		logkit.SetLogLevel(params.Log.Level)
-
 		if err != nil {
 			log.Fatalf("default config parameters not found: %s", err)
 		}
+
+		logkit.SetLogLevel(params.Log.Level)
+
 		httpSrv := &http.Server{
 			Addr: fmt.Sprintf(":%d", params.Server.Port),
 		}
 
-		// grpcが不要な場合は、nilを渡すことも可能。TODO: デフォルトではそうしておくこと。
-		return dikit.RegisterServerLifecycle(lc, httpSrv, grpcSrv)
+		dikit.RegisterHTTPServerLifecycle(lc, httpSrv)
+		return httpSrv
 	}
 }
 
@@ -92,6 +92,20 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 		},
 		PanicResponse: panicResponse,
 		Logger:        logger,
+	}
+}
+
+// gRPCサーバーの初期化
+func NewGRPCApp(env *string) func(lc dikit.LC) *grpc.Server {
+	return func(lc dikit.LC) *grpc.Server {
+		// TODO: envを使うこと
+
+		// TODO: interceptorを使って、リクエストのログを出力する
+		// TODO: panicが起きたときの制御はどうなる?
+		// そういった処理のセットを、httpPipelineのようにここの `opt`に渡すようにする
+		grpcSrv := grpc.NewServer()
+		dikit.RegisterGRPCServerLifecycle(lc, grpcSrv)
+		return grpcSrv
 	}
 }
 
