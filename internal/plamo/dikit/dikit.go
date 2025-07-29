@@ -11,6 +11,11 @@ import (
 	"google.golang.org/grpc"
 )
 
+// gRPCサービス登録用のインターフェース
+type GRPCServiceRegistrar interface {
+	RegisterWithServer(*grpc.Server)
+}
+
 var constructors = []any{}
 
 type LC = fx.Lifecycle
@@ -35,6 +40,14 @@ func AsHttpPipeline(f any) any {
 	return fx.Annotate(f, fx.ParamTags(`group:"modules"`))
 }
 
+func AsGRPCService(f any) any {
+	return fx.Annotate(
+		f,
+		fx.As(new(GRPCServiceRegistrar)),
+		fx.ResultTags(`group:"grpc_services"`),
+	)
+}
+
 func Bind[T any](concrete any) any {
 	return fx.Annotate(concrete, fx.As(new(T)))
 }
@@ -52,6 +65,27 @@ func ProvideAndRun(constructors []any, invocation any, outputFxLog bool) {
 	}
 
 	fx.New(options...).Run()
+}
+
+func RegisterGRPCServices() any {
+	return fx.Annotate(
+		func(
+			httpSrv *http.Server,
+			grpcSrv *grpc.Server,
+			grpcServices []GRPCServiceRegistrar,
+		) {
+			// gRPCサービスの一括登録
+			if grpcSrv != nil {
+				for _, service := range grpcServices {
+					service.RegisterWithServer(grpcSrv)
+				}
+				slog.Info("gRPC services registered", "count", len(grpcServices))
+			}
+		},
+		// 第1引数(httpSrv)と第2引数(grpcSrv)にタグは不要なので
+		// ``にしてある?
+		fx.ParamTags(``, ``, `group:"grpc_services"`),
+	)
 }
 
 func RegisterHTTPServerLifecycle(lc LC, srv *http.Server) {

@@ -6,16 +6,16 @@ import (
 	"net/http"
 
 	"github.com/nolafw/config/pkg/config"
+	"github.com/nolafw/config/pkg/env"
 	_ "github.com/nolafw/projecttemplate/internal/module"
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/projecttemplate/internal/plamo/logkit"
-	pbPost "github.com/nolafw/projecttemplate/service_adapter/post"
-	pbUser "github.com/nolafw/projecttemplate/service_adapter/user"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 // TODO: 別のファイルに分ける
@@ -24,41 +24,28 @@ type GlobalError struct {
 }
 
 // これを、cmd/main.goで実行する
-func Run(env *string) {
-	config.InitializeConfiguration(env, "./internal", "config")
+func Run(envVal *string) {
+	config.InitializeConfiguration(envVal, "./internal", "config")
 
 	dikit.AppendConstructors([]any{
-		NewHttpApp(env),
-		NewGRPCApp(env),
+		NewHttpApp(envVal),
+		NewGRPCApp(envVal),
 		dikit.AsHttpPipeline(CreateHttpPipeline),
 	})
 
-	dikit.ProvideAndRun(dikit.Constructors(), func(
-		httpSrv *http.Server,
-		grpcSrv *grpc.Server,
-		// TODO: この引数を特定の型の配列にしてにしてinvokeしたい
-		userGRPCService pbUser.UserServer,
-		postGRPCService pbPost.PostServer,
-	) {
-		// TODO: ちゃんとgRPCが動いてるかチェック
-		if grpcSrv != nil {
-			pbUser.RegisterUserServer(grpcSrv, userGRPCService)
-			pbPost.RegisterPostServer(grpcSrv, postGRPCService)
-			fmt.Println("gRPC server registered!")
-		}
-	}, false)
+	dikit.ProvideAndRun(dikit.Constructors(), dikit.RegisterGRPCServices(), false)
 }
 
 // HTTPサーバーの初期化
-func NewHttpApp(env *string) func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
+func NewHttpApp(envVal *string) func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
 	return func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
 		httpPipeline.Set()
-		// TODO: envを使うこと
+		// TODO: envValを使うこと
 		params, err := config.ModuleParams("default")
 		if err != nil {
 			log.Fatalf("default config parameters not found: %s", err)
 		}
-
+		// FIXME: 別の場所に移す
 		logkit.SetLogLevel(params.Log.Level)
 
 		httpSrv := &http.Server{
@@ -95,14 +82,19 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 }
 
 // gRPCサーバーの初期化
-func NewGRPCApp(env *string) func(lc dikit.LC) *grpc.Server {
+func NewGRPCApp(envVal *string) func(lc dikit.LC) *grpc.Server {
 	return func(lc dikit.LC) *grpc.Server {
-		// TODO: envを使うこと
-
 		// TODO: interceptorを使って、リクエストのログを出力する
 		// TODO: panicが起きたときの制御はどうなる?
 		// そういった処理のセットを、httpPipelineのようにここの `opt`に渡すようにする
 		grpcSrv := grpc.NewServer()
+
+		// reflectionは開発環境でのみ有効にする
+		if envVal != nil && (*envVal == string(env.Local) || *envVal == string(env.Develop)) {
+			reflection.Register(grpcSrv)
+			logkit.Info("gRPC reflection enabled for development environment", "env", *envVal)
+		}
+
 		dikit.RegisterGRPCServerLifecycle(lc, grpcSrv)
 		return grpcSrv
 	}

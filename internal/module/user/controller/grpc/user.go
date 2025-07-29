@@ -5,12 +5,15 @@ import (
 	"fmt"
 
 	"github.com/nolafw/projecttemplate/internal/module/user/service"
+	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	pb "github.com/nolafw/projecttemplate/service_adapter/user"
+	"google.golang.org/grpc"
 )
 
 // gRPCでの接続処理
 type UserGRPCService struct {
 	pb.UnimplementedUserServer
+	dikit.GRPCServiceRegistrar
 	service service.UserService
 }
 
@@ -19,6 +22,11 @@ func NewUserGRPCService(service service.UserService) *UserGRPCService {
 	return &UserGRPCService{
 		service: service,
 	}
+}
+
+// IMPORTANT! gRPCサーバーに登録するためのメソッド
+func (s *UserGRPCService) RegisterWithServer(grpcServer *grpc.Server) {
+	pb.RegisterUserServer(grpcServer, s)
 }
 
 // TODO:

@@ -30,7 +30,7 @@ func init() {
 		http.NewGet,
 		dikit.AsModule(NewModule),
 		// gRPC
-		postgrpc.NewPostGRPCService,
+		dikit.AsGRPCService(postgrpc.NewPostGRPCService),
 		dikit.Bind[pb.PostServer](postgrpc.NewPostGRPCService),
 	})
 }
