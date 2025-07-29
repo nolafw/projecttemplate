@@ -38,7 +38,7 @@ func init() {
 		http.NewPost,
 		dikit.AsModule(NewModule),
 		// gRPC
-		usergrpc.NewUserAPI,
-		dikit.Bind[pb.UserServer](usergrpc.NewUserAPI),
+		usergrpc.NewUserGRPCService,
+		dikit.Bind[pb.UserServer](usergrpc.NewUserGRPCService),
 	})
 }

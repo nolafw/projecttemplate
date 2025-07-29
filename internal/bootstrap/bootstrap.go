@@ -37,14 +37,13 @@ func Run(env *string) {
 		httpSrv *http.Server,
 		grpcSrv *grpc.Server,
 		// TODO: この引数を特定の型の配列にしてにしてinvokeしたい
-		userAPI pbUser.UserServer,
-		postAPI pbPost.PostServer,
+		userGRPCService pbUser.UserServer,
+		postGRPCService pbPost.PostServer,
 	) {
 		// TODO: ちゃんとgRPCが動いてるかチェック
 		if grpcSrv != nil {
-			// TODO: ここにgRPCのサービスを登録する
-			pbUser.RegisterUserServer(grpcSrv, userAPI)
-			pbPost.RegisterPostServer(grpcSrv, postAPI)
+			pbUser.RegisterUserServer(grpcSrv, userGRPCService)
+			pbPost.RegisterPostServer(grpcSrv, postGRPCService)
 			fmt.Println("gRPC server registered!")
 		}
 	}, false)
