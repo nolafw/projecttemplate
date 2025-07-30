@@ -146,6 +146,8 @@ func getDetailedClientInfo(ctx context.Context) map[string]any {
 	return info
 }
 
+// TODO: 何を出力するかは、クライアントコード側で決められるようにしたい。
+// callback関数を引数に取って、そこで出力する内容はクライアントコードで決めるようにするか?
 // gRPCリクエストログ出力用のUnaryServerInterceptor
 func LoggingUnaryInterceptor(logger *slog.Logger) grpc.UnaryServerInterceptor {
 	return func(
@@ -205,6 +207,8 @@ func LoggingUnaryInterceptor(logger *slog.Logger) grpc.UnaryServerInterceptor {
 	}
 }
 
+// TODO: 何を出力するかは、クライアントコード側で決められるようにしたい。
+// callback関数を引数に取って、そこで出力する内容はクライアントコードで決めるようにするか?
 // gRPCストリーミングログ出力用のStreamServerInterceptor
 func LoggingStreamInterceptor(logger *slog.Logger) grpc.StreamServerInterceptor {
 	return func(
