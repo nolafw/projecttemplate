@@ -36,6 +36,7 @@ func (s *UserGRPCService) RegisterWithServer(grpcServer *grpc.Server) {
 // 返り値は、DTOとerror
 func (s *UserGRPCService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 
+	// panic("just for test") // リカバリのテスト用
 	fmt.Println("GetUser called with request:", req.UserId)
 
 	return &pb.GetUserResponse{
