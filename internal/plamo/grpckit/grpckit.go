@@ -58,10 +58,6 @@ func NewGRPCServerWithLoggingAndRecovery(logger *slog.Logger, opts ...grpc.Serve
 // | 用途           | ライブラリ                                                              |
 // | ------------ | ------------------------------------------------------------------ |
 // | 認証・認可        | [grpc\_auth](https://github.com/grpc-ecosystem/go-grpc-middleware) |
-// | リカバリ（panic）  | `grpc_recovery`                                                    |
 
-// ✅ 自作Interceptorの活用パターン
-// 以下のような処理が共通化可能です：
 // 認証（JWTトークンの検証）
 // メタデータ（ヘッダー）の検査・追加
-// リカバリ(panic)
