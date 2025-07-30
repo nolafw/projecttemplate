@@ -9,6 +9,7 @@ import (
 	"github.com/nolafw/config/pkg/env"
 	_ "github.com/nolafw/projecttemplate/internal/module"
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
+	"github.com/nolafw/projecttemplate/internal/plamo/grpckit"
 	"github.com/nolafw/projecttemplate/internal/plamo/logkit"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
@@ -84,10 +85,8 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 // gRPCサーバーの初期化
 func NewGRPCApp(envVal *string) func(lc dikit.LC) *grpc.Server {
 	return func(lc dikit.LC) *grpc.Server {
-		// TODO: interceptorを使って、リクエストのログを出力する
-		// TODO: panicが起きたときの制御はどうなる?
-		// そういった処理のセットを、httpPipelineのようにここの `opt`に渡すようにする
-		grpcSrv := grpc.NewServer()
+		// ログ機能付きのgRPCサーバーを作成
+		grpcSrv := grpckit.NewGRPCServerWithLogging(logkit.Logger())
 
 		// reflectionは開発環境でのみ有効にする
 		// TODO: config/env にIsLocal()を作って、それを使う
