@@ -85,8 +85,8 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 // gRPCサーバーの初期化
 func NewGRPCApp(envVal *string) func(lc dikit.LC) *grpc.Server {
 	return func(lc dikit.LC) *grpc.Server {
-		// ログ機能とpanicリカバリ機能付きのgRPCサーバーを作成
-		grpcSrv := grpckit.NewGRPCServerWithLoggingAndRecovery(logkit.Logger())
+		// ログとpanicリカバリinterceptor付きのgRPCサーバーを作成
+		grpcSrv := grpckit.NewGRPCServer(logkit.Logger())
 
 		// reflectionは開発環境でのみ有効にする
 		// TODO: config/env にIsLocal()を作って、それを使う
