@@ -11,6 +11,7 @@ import (
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/projecttemplate/internal/plamo/grpckit"
 	"github.com/nolafw/projecttemplate/internal/plamo/logkit"
+	_ "github.com/nolafw/projecttemplate/service/connection/grpccltconn"
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"

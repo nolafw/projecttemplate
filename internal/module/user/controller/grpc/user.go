@@ -39,6 +39,8 @@ func (s *UserGRPCService) GetUser(ctx context.Context, req *pb.GetUserRequest) (
 	// panic("just for test") // リカバリのテスト用
 	fmt.Println("GetUser called with request:", req.UserId)
 
+	// ASK: gRPCのサービスの場合、ctxはクライアントにそのまま渡せばいいのか?
+
 	return &pb.GetUserResponse{
 		UserId: "1",
 		Name:   "John Doe",

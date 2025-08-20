@@ -7,6 +7,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+// FIXME: grpcサーバーに関する設定がここでいいのか、考え直す
+
 func NewGRPCServer(logger logging.Logger) *grpc.Server {
 	logCfg := LogConfig()
 	recCfg := recoverysrv.DefaultRecoveryConfig()

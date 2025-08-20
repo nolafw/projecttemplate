@@ -6,6 +6,7 @@ require google.golang.org/grpc v1.74.2
 
 require (
 	github.com/aws/aws-sdk-go v1.51.20 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/nolafw/config v0.0.12 // indirect

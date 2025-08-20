@@ -9,6 +9,7 @@ import (
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/rest/pkg/rest"
 
+	pbPost "github.com/nolafw/projecttemplate/service/adapter/post"
 	pb "github.com/nolafw/projecttemplate/service/adapter/user"
 )
 
@@ -37,8 +38,12 @@ func init() {
 		http.NewGet,
 		http.NewPost,
 		dikit.AsModule(NewModule),
-		// gRPC
+		// gRPC server
 		dikit.AsGRPCService(usergrpc.NewUserGRPCService),
 		dikit.Bind[pb.UserServer](usergrpc.NewUserGRPCService),
+		// gRPC client
+		// 別のgRPCサーバーのクライアントが必要な場合は、コンストラクタを追加
+		// このコンストラクタが必要な`grpc.ClientConnInterface`は、`service/connection`で定義する
+		pbPost.NewPostClient,
 	})
 }
