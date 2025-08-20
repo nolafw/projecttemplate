@@ -6,7 +6,7 @@ import (
 
 	"github.com/nolafw/projecttemplate/internal/module/user/service"
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
-	pb "github.com/nolafw/projecttemplate/service_adapter/user"
+	pb "github.com/nolafw/projecttemplate/service/adapter/user"
 	"google.golang.org/grpc"
 )
 

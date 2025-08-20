@@ -9,7 +9,7 @@ import (
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/rest/pkg/rest"
 
-	pb "github.com/nolafw/projecttemplate/service_adapter/user"
+	pb "github.com/nolafw/projecttemplate/service/adapter/user"
 )
 
 // TODO: nolacliでモジュールを作成したら、このファイルに

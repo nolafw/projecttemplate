@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "service_adapter/post";
+option go_package = "service/adapter/post";
 
 // ビルドコマンド
 // protoc --proto_path=proto --go_out=. --go-grpc_out=. proto/post/*

@@ -7,7 +7,7 @@ import (
 	"github.com/nolafw/projecttemplate/internal/module/post/controller/http"
 	"github.com/nolafw/projecttemplate/internal/module/post/service"
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
-	pb "github.com/nolafw/projecttemplate/service_adapter/post"
+	pb "github.com/nolafw/projecttemplate/service/adapter/post"
 	"github.com/nolafw/rest/pkg/rest"
 )
 
