@@ -52,13 +52,13 @@ func Bind[T any](concrete any) any {
 	return fx.Annotate(concrete, fx.As(new(T)))
 }
 
-// BindWithとセットで使う
-func AnnotateNameAs(constructor any, tag string) any {
+// InjectNamedとセットで使う - 結果に名前を付けて提供
+func ProvideNamed(constructor any, tag string) any {
 	return fx.Annotate(constructor, fx.ResultTags(`name:"`+tag+`"`))
 }
 
-// AnnotateAsとセットで使う
-func BindWithName(constructor any, tag string) any {
+// ProvideNamedとセットで使う - 名前で依存を注入
+func InjectNamed(constructor any, tag string) any {
 	return fx.Annotate(constructor, fx.ParamTags(`name:"`+tag+`"`))
 }
 
