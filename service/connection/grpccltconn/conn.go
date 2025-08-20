@@ -21,6 +21,7 @@ func NewUserPostConnection() grpc.ClientConnInterface {
 			"x-api-version": "v1",
 			"x-app-name":    "nolafw",
 		},
+		RequestIDKey: "x-request-id",
 		RequestIdGenerator: func() string {
 			return "req_" + uuid.New().String()
 		},

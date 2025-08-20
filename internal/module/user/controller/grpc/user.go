@@ -41,6 +41,10 @@ func (s *UserGRPCService) GetUser(ctx context.Context, req *pb.GetUserRequest) (
 
 	// ASK: gRPCのサービスの場合、ctxはクライアントにそのまま渡せばいいのか?
 
+	// just testing gRPC client call
+	p, _ := s.service.GetPostContent("1")
+	fmt.Printf("Post content: %#v\n", p)
+
 	return &pb.GetUserResponse{
 		UserId: "1",
 		Name:   "John Doe",

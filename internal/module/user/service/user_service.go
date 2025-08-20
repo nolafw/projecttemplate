@@ -15,6 +15,7 @@ import (
 // entityはserviceの中で処理でのみ使う。
 type UserService interface {
 	Something() string
+	GetPostContent(postId string) (string, error)
 }
 
 // gRPCクライアントが必要な場合は、クライアントの型を指定する
