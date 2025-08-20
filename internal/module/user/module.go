@@ -11,6 +11,7 @@ import (
 
 	pbPost "github.com/nolafw/projecttemplate/service/adapter/post"
 	pb "github.com/nolafw/projecttemplate/service/adapter/user"
+	"github.com/nolafw/projecttemplate/service/connection/grpccltconn"
 )
 
 // TODO: nolacliでモジュールを作成したら、このファイルに
@@ -46,6 +47,6 @@ func init() {
 		// このコンストラクタが必要な`grpc.ClientConnInterface`は、`service/connection`で定義する
 		// gRPCクライアントのコンストラクタは、`dikit.BindWithName`を使って、どの
 		// gRPCコネクションを使うかを指定すること
-		dikit.BindWithName(pbPost.NewPostClient, "postConn"),
+		dikit.BindWithName(pbPost.NewPostClient, grpccltconn.PostConnName),
 	})
 }

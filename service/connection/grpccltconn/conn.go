@@ -13,9 +13,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// TODO: ここにサービスのコネクションを作成
+const PostConnName = "postConn"
 
-// FIXME: サービスごとにコネクションが違う場合はどうするか?
 func NewUserPostConnection(lc dikit.LC) (grpc.ClientConnInterface, error) {
 	metadataConfig := &metaclt.ClientMetadataConfig{
 		StaticMetadata: map[string]string{
@@ -43,12 +42,12 @@ func NewUserPostConnection(lc dikit.LC) (grpc.ClientConnInterface, error) {
 		),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
-	host := "localhost:50051" // 環境変数から取得
+	host := "localhost:50051" // TODO: 環境変数などから取得
 	conn, err := grpc.NewClient(host, options...)
 	if err != nil {
 		return nil, err
 	}
-	// ASK: これ何のためのものか聞く
+
 	lc.Append(fx.Hook{
 		OnStop: func(ctx context.Context) error {
 			return conn.Close()
@@ -64,6 +63,6 @@ func init() {
 		// そのため、`dikit.AnnotateNameAs`を使って、名前を付けて区別する
 		// クライアント側のコンストラクタでは、`dikit.BindWithName`で、
 		// インジェクトする名前を指定してそれぞれに適したコネクションを渡す
-		dikit.AnnotateNameAs(NewUserPostConnection, "postConn"),
+		dikit.AnnotateNameAs(NewUserPostConnection, PostConnName),
 	})
 }
