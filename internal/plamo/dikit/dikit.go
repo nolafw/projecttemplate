@@ -52,6 +52,16 @@ func Bind[T any](concrete any) any {
 	return fx.Annotate(concrete, fx.As(new(T)))
 }
 
+// BindWithとセットで使う
+func AnnotateNameAs(constructor any, tag string) any {
+	return fx.Annotate(constructor, fx.ResultTags(`name:"`+tag+`"`))
+}
+
+// AnnotateAsとセットで使う
+func BindWithName(constructor any, tag string) any {
+	return fx.Annotate(constructor, fx.ParamTags(`name:"`+tag+`"`))
+}
+
 func ProvideAndRun(constructors []any, invocation any, outputFxLog bool) {
 	options := []fx.Option{
 		fx.Provide(

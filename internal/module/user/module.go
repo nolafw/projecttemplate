@@ -44,6 +44,8 @@ func init() {
 		// gRPC client
 		// 別のgRPCサーバーのクライアントが必要な場合は、コンストラクタを追加
 		// このコンストラクタが必要な`grpc.ClientConnInterface`は、`service/connection`で定義する
-		pbPost.NewPostClient,
+		// gRPCクライアントのコンストラクタは、`dikit.BindWithName`を使って、どの
+		// gRPCコネクションを使うかを指定すること
+		dikit.BindWithName(pbPost.NewPostClient, "postConn"),
 	})
 }
