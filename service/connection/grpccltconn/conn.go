@@ -15,7 +15,7 @@ import (
 // TODO: ここにサービスのコネクションを作成
 
 // FIXME: サービスごとにコネクションが違う場合はどうするか?
-func NewUserPostConnection() *grpc.ClientConn {
+func NewUserPostConnection() grpc.ClientConnInterface {
 	metadataConfig := &metaclt.ClientMetadataConfig{
 		StaticMetadata: map[string]string{
 			"x-api-version": "v1",
