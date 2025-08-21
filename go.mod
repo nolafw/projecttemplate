@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
-	github.com/nolafw/config v0.0.12 // indirect
+	github.com/nolafw/config v0.0.13 // indirect
 	github.com/nolafw/di v0.0.4 // indirect
 	github.com/nolafw/grpcgear v0.0.1 // indirect
 	github.com/nolafw/rest v0.0.7 // indirect

@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/nolafw/config/pkg/config"
-	"github.com/nolafw/config/pkg/runtimeconfig"
+	"github.com/nolafw/config/pkg/appconfig"
+	"github.com/nolafw/config/pkg/registry"
 	usergrpc "github.com/nolafw/projecttemplate/internal/module/user/controller/grpc"
 	"github.com/nolafw/projecttemplate/internal/module/user/controller/http"
 	"github.com/nolafw/projecttemplate/internal/module/user/service"
@@ -21,8 +21,8 @@ import (
 const ModuleName = "user"
 
 // TODO: 便利機能として、この関数も自動的にnolacliで生成する
-func Params() (*runtimeconfig.Parameters, error) {
-	return config.ModuleParams(ModuleName)
+func Params() (*appconfig.Parameters, error) {
+	return registry.ModuleParams(ModuleName)
 }
 
 func NewModule(get *http.Get, post *http.Post) *rest.Module {

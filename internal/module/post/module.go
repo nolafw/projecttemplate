@@ -1,8 +1,8 @@
 package post
 
 import (
-	"github.com/nolafw/config/pkg/config"
-	"github.com/nolafw/config/pkg/runtimeconfig"
+	"github.com/nolafw/config/pkg/appconfig"
+	"github.com/nolafw/config/pkg/registry"
 	postgrpc "github.com/nolafw/projecttemplate/internal/module/post/controller/grpc"
 	"github.com/nolafw/projecttemplate/internal/module/post/controller/http"
 	"github.com/nolafw/projecttemplate/internal/module/post/service"
@@ -13,8 +13,8 @@ import (
 
 const ModuleName = "post"
 
-func Params() (*runtimeconfig.Parameters, error) {
-	return config.ModuleParams(ModuleName)
+func Params() (*appconfig.Parameters, error) {
+	return registry.ModuleParams(ModuleName)
 }
 
 func NewModule(get *http.Get) *rest.Module {

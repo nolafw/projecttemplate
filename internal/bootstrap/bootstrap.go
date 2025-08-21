@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/nolafw/config/pkg/config"
 	"github.com/nolafw/config/pkg/env"
+	"github.com/nolafw/config/pkg/registry"
 	_ "github.com/nolafw/projecttemplate/internal/module"
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/projecttemplate/internal/plamo/grpckit"
@@ -27,7 +27,7 @@ type GlobalError struct {
 
 // これを、cmd/main.goで実行する
 func Run(envVal *string) {
-	config.InitializeConfiguration(envVal, "./internal", "config")
+	registry.InitializeConfiguration(envVal, "./internal", "config")
 
 	dikit.AppendConstructors([]any{
 		NewHttpApp(envVal),
@@ -43,7 +43,7 @@ func NewHttpApp(envVal *string) func(lc dikit.LC, httpPipeline *pipeline.Http) *
 	return func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
 		httpPipeline.Set()
 		// TODO: envValを使うこと
-		params, err := config.ModuleParams("default")
+		params, err := registry.ModuleParams("default")
 		if err != nil {
 			log.Fatalf("default config parameters not found: %s", err)
 		}
@@ -66,7 +66,7 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 		Body: &GlobalError{Message: "internal server error"},
 	}
 
-	configParams, err := config.ModuleParams("default")
+	configParams, err := registry.ModuleParams("default")
 	if err != nil {
 		log.Fatalf("default config parameters not found: %s", err)
 	}
