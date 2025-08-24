@@ -44,7 +44,7 @@ func init() {
 		dikit.AsModule(NewModule),
 
 		// ほかのモジュールのサービスが必要な場合は、`service/adapter`のinterface経由のでinject
-		dikit.Bind[order.OrderServiceAdapter](orderService.NewOrderService),
+		dikit.Bind[order.OrderService](orderService.NewOrderService),
 
 		// gRPC server
 		dikit.AsGRPCService(usergrpc.NewUserGRPCService),

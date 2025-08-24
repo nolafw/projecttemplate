@@ -22,6 +22,9 @@ func NewGet(service service.UserService) *Get {
 }
 
 func (c *Get) Handle(r *rest.Request) *rest.Response {
+
+	c.Service.Something() // DEBUG:
+
 	return &rest.Response{
 		Xml:        true,
 		Code:       http.StatusOK,

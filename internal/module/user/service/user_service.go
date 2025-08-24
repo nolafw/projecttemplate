@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/nolafw/projecttemplate/service/adapter/order"
 	pbPost "github.com/nolafw/projecttemplate/service/adapter/post"
 )
 
@@ -19,17 +21,20 @@ type UserService interface {
 }
 
 // gRPCクライアントが必要な場合は、クライアントの型を指定する
-func NewUserService(postClient pbPost.PostClient) UserService {
+func NewUserService(postClient pbPost.PostClient, orderService order.OrderService) UserService {
 	return &UserServiceImpl{
 		postClient: postClient,
 	}
 }
 
 type UserServiceImpl struct {
-	postClient pbPost.PostClient
+	postClient   pbPost.PostClient
+	orderService order.OrderService
 }
 
 func (s *UserServiceImpl) Something() string {
+	order, _ := s.orderService.GetOrder()
+	fmt.Println("orderService.GetOrder:", order)
 	return "hoge"
 }
 
