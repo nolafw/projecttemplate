@@ -1,8 +1,10 @@
 package order
 
+import "github.com/nolafw/projecttemplate/internal/module/order/dto"
+
 type OrderService interface {
 	// FIXME: 実際には引数や戻り値はオブジェクトになるので、そこをちゃんと実装して試してみる
-	GetOrder() (string, error)
+	GetOrder() (*dto.Order, error)
 }
 
 // TODO: 将来的に、別アプリケーションに分けてRPCでのinjectする場合は

@@ -34,8 +34,8 @@ func Run(envVal *string) {
 		NewGRPCApp(envVal),
 		dikit.AsHttpPipeline(CreateHttpPipeline),
 	})
-
-	dikit.ProvideAndRun(dikit.Constructors(), dikit.RegisterGRPCServices(), false)
+	// TODO: putputFxLogは、環境変数で変えれるようにする
+	dikit.ProvideAndRun(dikit.Constructors(), dikit.RegisterGRPCServices(), true)
 }
 
 // HTTPサーバーの初期化

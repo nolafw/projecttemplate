@@ -1,6 +1,7 @@
 package module
 
 import (
+	_ "github.com/nolafw/projecttemplate/internal/module/order"
 	_ "github.com/nolafw/projecttemplate/internal/module/post"
 	_ "github.com/nolafw/projecttemplate/internal/module/user"
 )

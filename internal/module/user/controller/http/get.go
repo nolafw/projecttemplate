@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/nolafw/projecttemplate/internal/module/user/dto"
@@ -23,8 +24,9 @@ func NewGet(service service.UserService) *Get {
 
 func (c *Get) Handle(r *rest.Request) *rest.Response {
 
+	fmt.Println("here? 1")
 	c.Service.Something() // DEBUG:
-
+	fmt.Println("here? 2")
 	return &rest.Response{
 		Xml:        true,
 		Code:       http.StatusOK,

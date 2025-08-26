@@ -33,8 +33,8 @@ type UserServiceImpl struct {
 }
 
 func (s *UserServiceImpl) Something() string {
-	order, _ := s.orderService.GetOrder()
-	fmt.Println("orderService.GetOrder:", order)
+	fmt.Printf("injected orderService: %T\n", s.orderService) // DEBUG: injectされてない
+	s.orderService.GetOrder()                                 // DEBUG:
 	return "hoge"
 }
 
