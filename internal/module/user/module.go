@@ -12,7 +12,7 @@ import (
 	"github.com/nolafw/projecttemplate/service/adapter/order"
 	pbPost "github.com/nolafw/projecttemplate/service/adapter/post"
 	pb "github.com/nolafw/projecttemplate/service/adapter/user"
-	"github.com/nolafw/projecttemplate/service/connection/grpccltconn"
+	"github.com/nolafw/projecttemplate/service/connection/grpcclt"
 
 	orderService "github.com/nolafw/projecttemplate/internal/module/order/service"
 )
@@ -54,6 +54,6 @@ func init() {
 		// このコンストラクタが必要な`grpc.ClientConnInterface`は、`service/connection`で定義する
 		// gRPCクライアントのコンストラクタは、`dikit.InjectNamed`を使って、どの
 		// gRPCコネクションを使うかを指定すること
-		dikit.InjectNamed(pbPost.NewPostClient, grpccltconn.PostConnName),
+		dikit.InjectNamed(pbPost.NewPostClient, grpcclt.PostConnName),
 	})
 }
