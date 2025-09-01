@@ -9,9 +9,9 @@ import (
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/rest/pkg/rest"
 
+	"github.com/nolafw/projecttemplate/internal/infra/connection/grpcclt"
 	pbPost "github.com/nolafw/projecttemplate/service/adapter/post"
 	pb "github.com/nolafw/projecttemplate/service/adapter/user"
-	"github.com/nolafw/projecttemplate/service/connection/grpcclt"
 )
 
 // TODO: nolacliでモジュールを作成したら、このファイルに
