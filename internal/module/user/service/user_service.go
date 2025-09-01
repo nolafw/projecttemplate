@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nolafw/projecttemplate/service/adapter/order"
+	order "github.com/nolafw/projecttemplate/internal/module/order/service"
 	pbPost "github.com/nolafw/projecttemplate/service/adapter/post"
 )
 
@@ -21,6 +21,8 @@ type UserService interface {
 }
 
 // gRPCクライアントが必要な場合は、クライアントの型を指定する
+// order serviceについては、すでにorderのモジュールでBindされているので、
+// このmoduleの`init`でBindする必要はなく、dikitが自動的に解決してくれる
 func NewUserService(postClient pbPost.PostClient, orderService order.OrderService) UserService {
 	return &UserServiceImpl{
 		postClient:   postClient,
@@ -34,8 +36,8 @@ type UserServiceImpl struct {
 }
 
 func (s *UserServiceImpl) Something() string {
-	fmt.Printf("injected orderService: %T\n", s.orderService) // DEBUG: injectされてない
-	s.orderService.GetOrder()                                 // DEBUG:
+	fmt.Printf("injected orderService: %T\n", s.orderService)
+	s.orderService.GetOrder()
 	return "hoge"
 }
 

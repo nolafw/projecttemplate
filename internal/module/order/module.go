@@ -24,7 +24,6 @@ func NewModule(get *http.Get) *rest.Module {
 
 func init() {
 	dikit.AppendConstructors([]any{
-		// FIXME: injectされてない
 		dikit.Bind[service.OrderService](service.NewOrderService),
 		http.NewGet,
 		dikit.AsModule(NewModule),

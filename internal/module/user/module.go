@@ -9,12 +9,9 @@ import (
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/rest/pkg/rest"
 
-	"github.com/nolafw/projecttemplate/service/adapter/order"
 	pbPost "github.com/nolafw/projecttemplate/service/adapter/post"
 	pb "github.com/nolafw/projecttemplate/service/adapter/user"
 	"github.com/nolafw/projecttemplate/service/connection/grpcclt"
-
-	orderService "github.com/nolafw/projecttemplate/internal/module/order/service"
 )
 
 // TODO: nolacliでモジュールを作成したら、このファイルに
@@ -43,12 +40,10 @@ func init() {
 		http.NewPost,
 		dikit.AsModule(NewModule),
 
-		// ほかのモジュールのサービスが必要な場合は、`service/adapter`のinterface経由のでinject
-		dikit.Bind[order.OrderService](orderService.NewOrderService),
-
 		// gRPC server
 		dikit.AsGRPCService(usergrpc.NewUserGRPCService),
 		dikit.Bind[pb.UserServer](usergrpc.NewUserGRPCService),
+
 		// gRPC client
 		// 別のgRPCサーバーのクライアントが必要な場合は、コンストラクタを追加
 		// このコンストラクタが必要な`grpc.ClientConnInterface`は、`service/connection`で定義する
