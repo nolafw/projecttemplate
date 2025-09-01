@@ -23,7 +23,8 @@ type UserService interface {
 // gRPCクライアントが必要な場合は、クライアントの型を指定する
 func NewUserService(postClient pbPost.PostClient, orderService order.OrderService) UserService {
 	return &UserServiceImpl{
-		postClient: postClient,
+		postClient:   postClient,
+		orderService: orderService,
 	}
 }
 
