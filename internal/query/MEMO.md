@@ -5,8 +5,8 @@ CQRSのQueryと同等の役割。
 複数のテーブルをJOINするような、SQLで直接DBを操作してデータ取得するような操作も許容するものとする。
 
 返す値は、各ドメインに属さない、個別の型を返すようにする
-ドメインに属さない、CQRSのQueryの戻り値は、`*** Model`という名前にする。
-ドメインに属するmoduleのrepositoryの戻り値は、`***Entity`という名前にして、
+ドメインに属さない、CQRSのQueryの戻り値は、`***Record`という名前にする。
+ドメインに属するmoduleのrepositoryの戻り値は、`***Model`という名前にして、
 composite_repositoryと、moduleのrepositoryで扱うデータベースの値は違うものだと区別する。
 基本的に、Modelは、データ専用のオブジェクトで、ドメインロジックを含まないものとして扱うようにする。
 

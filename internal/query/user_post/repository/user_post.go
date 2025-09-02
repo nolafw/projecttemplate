@@ -1,3 +1,3 @@
-package userpost
+package repository
 
 type UserPostRepository interface{}

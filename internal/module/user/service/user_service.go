@@ -13,8 +13,8 @@ import (
 // 直接このサービスを呼び出すのではなく、
 // 一度ServiceAdapterを通して呼び出すこと
 // serviceの返す値は必ずDTOにすること
-// entityを返さないように実装すること
-// entityはserviceの中で処理でのみ使う。
+// modelを返さないように実装すること
+// modelはserviceの中で処理でのみ使う。
 type UserService interface {
 	Something() string
 	GetPostContent(postId string) (string, error)

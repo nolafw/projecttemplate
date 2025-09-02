@@ -1,4 +1,4 @@
-package entity
+package model
 
-// order_detailsのentity
+// order_detailsのmodel
 // ordersテーブルと1対多の関係にある
