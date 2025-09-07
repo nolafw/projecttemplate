@@ -22,7 +22,7 @@ func NewPost(service service.UserService) *Post {
 }
 
 func (c *Post) Handle(r *rest.Request) *rest.Response {
-	user, err := vkit.HttpRequestBody[dto.User](r, &rule.RuleSet{
+	user, err := vkit.HttpRequestBody[dto.CreateUser](r, &rule.RuleSet{
 		Field: "name",
 		Rules: []rule.Rule{
 			vkit.MaxLength(10),
@@ -55,6 +55,6 @@ func (c *Post) Handle(r *rest.Request) *rest.Response {
 	return &rest.Response{
 		Code:       http.StatusOK,
 		AddHeaders: map[string]string{"Server": "net/http"},
-		Body:       &dto.User{Id: 1, Name: "hoge"},
+		Body:       &dto.CreateUser{Id: 1, Name: "hoge"},
 	}
 }
