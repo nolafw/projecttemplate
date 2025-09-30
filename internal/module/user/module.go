@@ -5,9 +5,11 @@ import (
 	"github.com/nolafw/config/pkg/registry"
 	usergrpc "github.com/nolafw/projecttemplate/internal/module/user/controller/grpc"
 	"github.com/nolafw/projecttemplate/internal/module/user/controller/http"
+	"github.com/nolafw/projecttemplate/internal/module/user/controller/ws"
 	"github.com/nolafw/projecttemplate/internal/module/user/service"
 	"github.com/nolafw/projecttemplate/internal/plamo/dikit"
 	"github.com/nolafw/rest/pkg/rest"
+	"github.com/nolafw/websocket/pkg/wsconfig"
 
 	"github.com/nolafw/projecttemplate/internal/infra/connection/grpcclt"
 	pbPost "github.com/nolafw/projecttemplate/service/adapter/post"
@@ -33,12 +35,29 @@ func NewModule(get *http.Get, post *http.Post) *rest.Module {
 	}
 }
 
+func NewWebSocketModule(onOpen *ws.OnOpen, onMessage *ws.OnMessage) *wsconfig.Module {
+	module := wsconfig.NewDefaultModule("/ws/" + ModuleName)
+	// for logging
+	module.AddOnOpenMiddleware(ws.LogOnOpen)
+	module.OnOpen = onOpen.OnOpen()
+
+	// for logging
+	module.AddOnMessageMiddleware(ws.LogOnMessage)
+	module.OnMessage = onMessage.OnMessage()
+	return module
+}
+
 func init() {
 	dikit.AppendConstructors([]any{
 		dikit.Bind[service.UserService](service.NewUserService),
 		http.NewGet,
 		http.NewPost,
-		dikit.AsModule(NewModule),
+		dikit.AsHTTPModule(NewModule),
+
+		// WebSocket
+		ws.NewOnOpen,
+		ws.NewOnMessage,
+		dikit.AsWSModule(NewWebSocketModule),
 
 		// gRPC server
 		dikit.AsGRPCService(usergrpc.NewUserGRPCService),

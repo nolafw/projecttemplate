@@ -16,6 +16,8 @@ import (
 	"github.com/nolafw/rest/pkg/mw"
 	"github.com/nolafw/rest/pkg/pipeline"
 	"github.com/nolafw/rest/pkg/rest"
+	"github.com/nolafw/websocket/pkg/wsconfig"
+	"github.com/nolafw/websocket/pkg/wsrouter"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -31,18 +33,21 @@ func Run(envVal *string) {
 	registry.InitializeConfiguration(envVal, "./internal", "config")
 
 	dikit.AppendConstructors([]any{
-		NewHttpApp(envVal),
+		NewHTTPApp(envVal),
 		NewGRPCApp(envVal),
-		dikit.AsHttpPipeline(CreateHttpPipeline),
+		dikit.AsHTTPPipeline(CreateHTTPPipeline),
+		dikit.AsWSRouter(CreateWSRouter),
 	})
 	// TODO: putputFxLogは、環境変数で変えれるようにする
 	dikit.ProvideAndRun(dikit.Constructors(), dikit.RegisterGRPCServices(), true)
 }
 
 // HTTPサーバーの初期化
-func NewHttpApp(envVal *string) func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
-	return func(lc dikit.LC, httpPipeline *pipeline.Http) *http.Server {
+func NewHTTPApp(envVal *string) func(lc dikit.LC, httpPipeline *pipeline.HTTP, wsRouter *wsrouter.Router) *http.Server {
+	return func(lc dikit.LC, httpPipeline *pipeline.HTTP, wsRouter *wsrouter.Router) *http.Server {
 		httpPipeline.Set()
+		wsRouter.Register()
+
 		// TODO: envValを使うこと
 		params, err := registry.ModuleParams("default")
 		if err != nil {
@@ -60,7 +65,7 @@ func NewHttpApp(envVal *string) func(lc dikit.LC, httpPipeline *pipeline.Http) *
 	}
 }
 
-func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
+func CreateHTTPPipeline(modules []*rest.Module) *pipeline.HTTP {
 	// TODO: 別のファイルに分ける
 	panicResponse := &rest.Response{
 		Code: http.StatusInternalServerError,
@@ -73,7 +78,7 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 	}
 	cors := configParams.Cors
 
-	return &pipeline.Http{
+	return &pipeline.HTTP{
 		Modules: modules,
 		GlobalMiddlewares: []rest.Middleware{
 			mw.Logging(logIncomingRequest),
@@ -81,6 +86,12 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 			mw.VerifyBodyParsable,
 			mw.NewSimpleCors(cors),
 		},
+	}
+}
+
+func CreateWSRouter(modules []*wsconfig.Module) *wsrouter.Router {
+	return &wsrouter.Router{
+		Modules: modules,
 	}
 }
 

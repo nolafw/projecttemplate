@@ -29,15 +29,26 @@ func Constructors() []any {
 	return constructors
 }
 
-func AsModule(f any) any {
+func AsHTTPModule(f any) any {
 	return fx.Annotate(
 		f,
-		fx.ResultTags(`group:"modules"`),
+		fx.ResultTags(`group:"http_modules"`),
 	)
 }
 
-func AsHttpPipeline(f any) any {
-	return fx.Annotate(f, fx.ParamTags(`group:"modules"`))
+func AsWSModule(f any) any {
+	return fx.Annotate(
+		f,
+		fx.ResultTags(`group:"ws_modules"`),
+	)
+}
+
+func AsHTTPPipeline(f any) any {
+	return fx.Annotate(f, fx.ParamTags(`group:"http_modules"`))
+}
+
+func AsWSRouter(f any) any {
+	return fx.Annotate(f, fx.ParamTags(`group:"ws_modules"`))
 }
 
 func AsGRPCService(f any) any {

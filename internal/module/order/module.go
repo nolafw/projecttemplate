@@ -26,6 +26,6 @@ func init() {
 	dikit.AppendConstructors([]any{
 		dikit.Bind[service.OrderService](service.NewOrderService),
 		http.NewGet,
-		dikit.AsModule(NewModule),
+		dikit.AsHTTPModule(NewModule),
 	})
 }

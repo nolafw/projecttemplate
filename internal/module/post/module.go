@@ -28,7 +28,7 @@ func init() {
 	dikit.AppendConstructors([]any{
 		dikit.Bind[service.PostService](service.NewPostService),
 		http.NewGet,
-		dikit.AsModule(NewModule),
+		dikit.AsHTTPModule(NewModule),
 		// gRPC
 		dikit.AsGRPCService(postgrpc.NewPostGRPCService),
 		dikit.Bind[pb.PostServer](postgrpc.NewPostGRPCService),

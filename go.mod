@@ -7,12 +7,13 @@ require google.golang.org/grpc v1.74.2
 require (
 	github.com/aws/aws-sdk-go v1.51.20 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/nolafw/config v0.0.13 // indirect
 	github.com/nolafw/di v0.0.4 // indirect
 	github.com/nolafw/grpcgear v0.0.1 // indirect
-	github.com/nolafw/rest v0.0.10 // indirect
+	github.com/nolafw/rest v0.0.11 // indirect
 	github.com/nolafw/validator v0.0.3 // indirect
 	github.com/nolafw/websocket v0.0.1 // indirect
 	go.opentelemetry.io/otel v1.36.0 // indirect
