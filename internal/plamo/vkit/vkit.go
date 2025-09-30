@@ -10,8 +10,8 @@ import (
 // validate.HttpRequestBodyFieldFirst か、
 // validate.HttpRequestBodyLangFirst はプロジェクトの都合に合わせて
 // 選択してください。
-func HttpRequestBody[T any](r *rest.Request, ruleSets ...*rule.RuleSet) (*T, verr.ValidationErrorMessages) {
-	return validate.HttpRequestBodyFieldFirst[T](r.Request(), ruleSets...)
+func RestRequestBody[T any](r *rest.Request, ruleSets ...*rule.RuleSet) (*T, verr.ValidationErrorMessages) {
+	return validate.RestRequestBodyFieldFirst[T](r, ruleSets...)
 }
 
 // validate.MapFieldFirst か、

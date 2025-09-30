@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/nolafw/config/pkg/env"
@@ -75,11 +76,11 @@ func CreateHttpPipeline(modules []*rest.Module) *pipeline.Http {
 	return &pipeline.Http{
 		Modules: modules,
 		GlobalMiddlewares: []rest.Middleware{
+			mw.Logging(logIncomingRequest),
+			mw.RecoveryWithLogger(panicResponse, logPanicDetails),
 			mw.VerifyBodyParsable,
 			mw.NewSimpleCors(cors),
 		},
-		PanicResponse: panicResponse,
-		Logger:        logger,
 	}
 }
 
@@ -101,13 +102,26 @@ func NewGRPCApp(envVal *string) func(lc dikit.LC) *grpc.Server {
 	}
 }
 
-func logger(req *rest.Request, res *rest.Response) {
-	logkit.Info(
-		"TODO: メッセージ内容",
-		"addr", req.RemoteAddr(),
-		"method", req.Method(),
-		"code", res.Code,
-		"path", req.Path(),
-		"user-agent", req.UserAgent(),
+func logIncomingRequest(req *rest.Request, res *rest.Response) {
+	logkit.Info("HTTP Request",
+		slog.String("method", req.Method()),
+		slog.String("path", req.Path()),
+		slog.Int("status_code", res.Code),
+		slog.String("remote_addr", req.RemoteAddr()),
+		slog.String("user_agent", req.UserAgent()),
+		slog.String("type", "access_log"),
+	)
+}
+
+func logPanicDetails(r *rest.Request, panicValue interface{}, stackTrace []byte) {
+	logkit.Error("Panic Recovered",
+		slog.String("method", r.Method()),
+		slog.String("url", r.URLStr()),
+		slog.String("remote_addr", r.RemoteAddr()),
+		slog.String("user_agent", r.UserAgent()),
+		slog.Any("panic_value", panicValue),
+		slog.String("panic_type", fmt.Sprintf("%T", panicValue)),
+		slog.String("stack_trace", string(stackTrace)),
+		slog.String("type", "panic_log"),
 	)
 }
