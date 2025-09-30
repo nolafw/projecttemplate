@@ -13,7 +13,7 @@ require (
 	github.com/nolafw/config v0.0.13 // indirect
 	github.com/nolafw/di v0.0.4 // indirect
 	github.com/nolafw/grpcgear v0.0.1 // indirect
-	github.com/nolafw/rest v0.0.11 // indirect
+	github.com/nolafw/rest v0.0.12 // indirect
 	github.com/nolafw/validator v0.0.3 // indirect
 	github.com/nolafw/websocket v0.0.1 // indirect
 	go.opentelemetry.io/otel v1.36.0 // indirect

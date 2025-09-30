@@ -45,7 +45,7 @@ func Run(envVal *string) {
 // HTTPサーバーの初期化
 func NewHTTPApp(envVal *string) func(lc dikit.LC, httpPipeline *pipeline.HTTP, wsRouter *wsrouter.Router) *http.Server {
 	return func(lc dikit.LC, httpPipeline *pipeline.HTTP, wsRouter *wsrouter.Router) *http.Server {
-		httpPipeline.Set()
+		httpPipeline.Register()
 		wsRouter.Register()
 
 		// TODO: envValを使うこと
