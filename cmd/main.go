@@ -9,6 +9,9 @@ import (
 
 // main entry point
 
+// TODO: メイン関数をcobraに置き換える
+// cobraを使うことで、internal/cmd配下に複数のコマンドを配置できるようになる
+// cobraをそのままよりも、cmdkitか、cmdgearでラップするか?
 func main() {
 
 	// FIXME: configのenvを使って、ここのリストを修正する
