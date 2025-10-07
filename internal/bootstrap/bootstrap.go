@@ -38,6 +38,8 @@ func Run(envVal *string) {
 		dikit.AsHTTPPipeline(CreateHTTPPipeline),
 		dikit.AsWSRouter(CreateWSRouter),
 	})
+	// TODO: メッセージブローカーは、httpサーバーとは別にライフサイクル用のcontext.Contextが必要
+	// fxのライフサイクルで、メッセージブローカーのcontext.Contextを含める必要がある
 	// TODO: putputFxLogは、環境変数で変えれるようにする
 	dikit.ProvideAndRun(dikit.Constructors(), dikit.RegisterGRPCServices(), true)
 }
